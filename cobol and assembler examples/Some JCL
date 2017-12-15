@@ -1,0 +1,64 @@
+//ASSIGN2 JOB  ,'JOHN AYLING',MSGCLASS=H                                00010037
+//JOBLIB DD DSN=KC02322.CSCI465.LOADLIB,DISP=SHR                        00020010
+//*                                                                     00030010
+//***********************************************************           00040008
+//*                                                         *           00050008
+//* CSCI 465/565 - FALL 2017                                *           00060008
+//*                                                         *           00070008
+//* ASSIGNMENT 2 - JCL AND PROGRAM FETCH                    *           00080008
+//*                                                         *           00090008
+//* PROGRAMMER: JOHN AYLING                                 *           00100008
+//*                                                         *           00110008
+//* DUE DATE: 9/15/2017                                     *           00120008
+//* DUE TIME: 11:59 PM                                      *           00130008
+//*                                                         *           00140008
+//* THE PURPOSE OF THIS PROGRAM IS TO PRACTICE WRITING      *           00150008
+//* AND DOCUMENTING A SIMPLE JCL                            *           00160008
+//*                                                         *           00170010
+//* DDNAME           FILE DESCRIPTION                       *           00180010
+//*                                                         *           00190010
+//* JOBLIB           INPUT:  CONTAINS THE COBOL PROGRAMS    *           00200010
+//*                                                         *           00210010
+//***********************************************************           00220008
+//*                                                                     00230008
+//STEP1    EXEC PGM=READDATA                                            00240033
+//*                                                                     00250010
+//***********************************************************           00260010
+//*                                                         *           00270010
+//* STEP1 RUNS READDATA WHICH WILL READ DATA FROM RECSIN1   *           00280012
+//* AND OUTPUT IT TO A TEMP FILE RESCOUT1                   *           00290010
+//*                                                         *           00300010
+//* DDNAME            FILE DESCRIPTION                      *           00310010
+//*                                                         *           00320010
+//* RECSIN1           INPUT:  A FILE CONTAINING 80 BYTE     *           00330024
+//*                           RECORDS                       *           00331024
+//*                                                         *           00340010
+//* RECSOUT1          OUTPUT: SPACE FOR 80-BYTE TEMP RECORD *           00350024
+//* SYSUDUMP          OUTPUT: OUTPUT FOR ABENDS             *           00360010
+//*                                                         *           00370030
+//***********************************************************           00380010
+//*                                                                     00390010
+//RECSIN1  DD DSN=KC02322.CSCI465.DATAFA17(DATA2),DISP=SHR              00400031
+//RECSOUT1 DD DSN=&&TEMP,DISP=(NEW,PASS,DELETE),                        00410032
+//            SPACE=(80,(10,10),RLSE)                                   00420035
+//SYSUDUMP DD SYSOUT=*                                                  00440031
+//*                                                                     00450010
+//STEP2    EXEC PGM=RPTDATA                                             00460012
+//*                                                                     00470010
+//***********************************************************           00480010
+//*                                                         *           00490010
+//* STEP2 RUNS RPTDATA WHICH TAKES THE TEMP OUTPUT FROM     *           00500012
+//* STEP1 AND THEN SENDS IT TO OUTPUT                       *           00510010
+//*                                                         *           00520010
+//* DDNAME           FILE DESCRIPTION                       *           00530010
+//*                                                         *           00540010
+//* RECSIN2          INPUT:  TEMP FILE FROM STEP1           *           00550010
+//*                                                         *           00560010
+//* RECSOUT2         OUTPUT: SYSTEM OUT                     *           00570010
+//* SYSUDUMP         OUTPUT: USED FOR OUTPUT ON ABEND       *           00580010
+//*                                                         *           00590010
+//***********************************************************           00600010
+//*                                                                     00610010
+//RECSIN2  DD DSN=&&TEMP,DISP=(OLD,DELETE,DELETE)                       00620033
+//RECSOUT2 DD SYSOUT=*,DCB=(RECFM=FBA)                                  00630043
+//SYSUDUMP DD SYSOUT=*                                                  00640033

@@ -1,0 +1,210 @@
+//KC03GD0A JOB  ,'JOHN AYLING',MSGCLASS=H                               00010001
+//*                                                                     00020001
+//***********************************************************           00030001
+//*                                                         *           00040001
+//* CSCI 465/565 - FALL 2017                                *           00050001
+//*                                                         *           00060001
+//* ASSIGNMENT 5                                            *           00070001
+//*                                                         *           00080001
+//* PROGRAMMER: JOHN AYLING                                 *           00090001
+//*                                                         *           00100001
+//* DUE DATE: 10/20/2017                                    *           00110001
+//* DUE TIME: 11:59 PM                                      *           00120001
+//*                                                         *           00130001
+//* TEST SOME COBOL OUTPUT FORMAT                           *           00140001
+//*                                                         *           00160001
+//***********************************************************           00170001
+//*                                                                     00180001
+//STEP01   EXEC PGM=IGYCRCTL,REGION=0M,                                 00190001
+//         PARM='FLAG(I,I),APOST'                                       00200001
+//*                                                                     00210001
+//***********************************************************           00220001
+//*                                                         *           00230001
+//* STEP01 RUNS THE COBOL COM. IT WILL TAKE AN INLINE SOURCE*           00240001
+//* AND WILL OUTPUT BE THE OBJECT MODULE                    *           00250001
+//*                                                         *           00260001
+//* DDNAME            FILE DESCRIPTION                      *           00270001
+//*                                                         *           00280001
+//* SYSIN             INPUT : INLINE SOURCE CODE            *           00290001
+//*                                                         *           00300001
+//* SYSLIN            OUTPUT: OBJECT MODULE                 *           00310001
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00320001
+//* SYSUT1            OUTPUT: SCRATCH DATA SET              *           00330001
+//* SYSUT2            OUTPUT: SCRATCH DATA SET              *           00340001
+//* SYSUT3            OUTPUT: SCRATCH DATA SET              *           00350001
+//* SYSUT4            OUTPUT: SCRATCH DATA SET              *           00360001
+//* SYSUT5            OUTPUT: SCRATCH DATA SET              *           00370001
+//* SYSUT6            OUTPUT: SCRATCH DATA SET              *           00380001
+//* SYSUT7            OUTPUT: SCRATCH DATA SET              *           00390001
+//* SYSUT8            OUTPUT: SCRATCH DATA SET              *           00400001
+//* SYSUT9            OUTPUT: SCRATCH DATA SET              *           00410001
+//* SYSUT10           OUTPUT: SCRATCH DATA SET              *           00420001
+//* SYSUT11           OUTPUT: SCRATCH DATA SET              *           00430001
+//* SYSUT12           OUTPUT: SCRATCH DATA SET              *           00440001
+//* SYSUT13           OUTPUT: SCRATCH DATA SET              *           00450001
+//* SYSUT14           OUTPUT: SCRATCH DATA SET              *           00460001
+//* SYSUT15           OUTPUT: SCRATCH DATA SET              *           00470001
+//* SYSMDECK          OUTPUT: INPUT COPY                    *           00480001
+//*                                                         *           00490001
+//***********************************************************           00500001
+//*                                                                     00510001
+//SYSIN    DD *                                                         00520001
+       IDENTIFICATION DIVISION.                                         00530001
+                                                                        00540001
+      *******************************************************           00550001
+      *                                                     *           00560001
+      * FUNCTION:  THIS PROGRAM PRODUCES TWO FORMATED       *           00570001
+      *            REPORTS                                  *           00580001
+      *                                                     *           00590001
+      * OUTPUT:    PRINT-FILE                               *           00640001
+      *            FORMATED RECORD INFORMATION AND TOTAL    *           00650001
+      *            DEPOSIT AMOUNT                           *           00660001
+      *                                                     *           00710001
+      * ENTRY CONDITIONS:  NONE                             *           00720001
+      *                                                     *           00730001
+      * EXIT CONDITIONS:   NONE                             *           00740001
+      *                                                     *           00750001
+      * NOTES:             NONE                             *           00760001
+      *                                                     *           00770001
+      *******************************************************           00780001
+       PROGRAM-ID.    FORMAT.                                           00790001
+       AUTHOR.        JOHNN AYLING.                                     00800001
+       DATE-WRITTEN.  10/06/2017.                                       00810001
+       DATE-COMPILED.                                                   00820001
+                                                                        00830001
+       ENVIRONMENT DIVISION.                                            00840001
+                                                                        00850001
+       INPUT-OUTPUT SECTION.                                            00860001
+                                                                        00870001
+       FILE-CONTROL.                                                    00880001
+                                                                        00890001
+           SELECT PRINT-FILE   ASSIGN TO RECOUT.                        00910001
+                                                                        00930001
+       DATA DIVISION.                                                   00940001
+                                                                        00950001
+       FILE SECTION.                                                    00960001
+                                                                        00970001
+      *******************************************************           01090001
+      * PRINT-FILE CONTAINS THE GENERIC PRINT LINE TO PRINT *           01100001
+      * OUTPUT                                              *           01110001
+      *******************************************************           01120001
+       FD  PRINT-FILE                                                   01130001
+           RECORDING MODE IS F.                                         01140001
+                                                                        01150001
+       01  PRINT-RECORD                        PIC X(132).              01160001
+                                                                        01170001
+       WORKING-STORAGE SECTION.                                         01320001
+                                                                        01330001
+       01  NUMBERS.                                                     02070001
+           05 TEST-NUM                  PIC S9(5)V99 VALUE -5236.69.    03710003
+           05 TEST-NUM-2                PIC S9(5)V99 VALUE 324.72.      03710107
+                                                                        03711001
+       01  PRINT-LINE.                                                  03712002
+           05  FLOATTEST                PIC $$,$$9.99.                  03713002
+           05                           PIC X(3) VALUE SPACES.          03714004
+           05  DBTEST                   PIC $$,$$9.99DB.                03715002
+           05                           PIC X(3) VALUE SPACES.          03716004
+           05  MINUSTEST                PIC --,--9.99.                  03717005
+           05                           PIC X(3) VALUE SPACES.          03718004
+           05  PLUSTEST                 PIC ++,++9.99.                  03719005
+           05                           PIC X(3) VALUE SPACES.          03719104
+           05  CRTEST                   PIC $$,$$9.99CR.                03719202
+           05                           PIC X(71) VALUE SPACES.         03719306
+                                                                        03719402
+       PROCEDURE DIVISION.                                              03720001
+                                                                        03730001
+      *******************************************************           03740001
+      *                                                     *           03750001
+      * THIS ROUTINE CONTROLS THE FLOW OF LOGIC TO THE MAIN *           03760001
+      * PROGRAM                                             *           03770001
+      *                                                     *           03780001
+      *******************************************************           03790001
+                                                                        03800001
+       0000-MAIN.                                                       03810001
+                                                                        03820001
+           OPEN OUTPUT PRINT-FILE                                       03840001
+                                                                        03841002
+           MOVE TEST-NUM TO FLOATTEST.                                  03850002
+           MOVE TEST-NUM TO DBTEST.                                     03870002
+           MOVE TEST-NUM TO MINUSTEST.                                  03890005
+           MOVE TEST-NUM TO PLUSTEST.                                   03910005
+           MOVE TEST-NUM TO CRTEST.                                     03930002
+                                                                        03940002
+           WRITE PRINT-RECORD FROM PRINT-LINE.                          03950002
+                                                                        03960007
+           MOVE TEST-NUM-2 TO FLOATTEST.                                03970007
+           MOVE TEST-NUM-2 TO DBTEST.                                   03980007
+           MOVE TEST-NUM-2 TO MINUSTEST.                                03990007
+           MOVE TEST-NUM-2 TO PLUSTEST.                                 04000007
+           MOVE TEST-NUM-2 TO CRTEST.                                   04010007
+                                                                        04020007
+           WRITE PRINT-RECORD FROM PRINT-LINE.                          04030007
+           CLOSE PRINT-FILE                                             04260001
+                                                                        04280001
+           GOBACK.                                                      04290001
+/*                                                                      06330001
+//SYSLIN   DD DSN=&&OBJ,SPACE=(CYL,(1,1)),                              06340001
+//         DISP=(MOD,PASS,DELETE)                                       06350001
+//SYSUT1   DD SPACE=(CYL,(1,1))                                         06360001
+//SYSUT2   DD SPACE=(CYL,(1,1))                                         06370001
+//SYSUT3   DD SPACE=(CYL,(1,1))                                         06380001
+//SYSUT4   DD SPACE=(CYL,(1,1))                                         06390001
+//SYSUT5   DD SPACE=(CYL,(1,1))                                         06400001
+//SYSUT6   DD SPACE=(CYL,(1,1))                                         06410001
+//SYSUT7   DD SPACE=(CYL,(1,1))                                         06420001
+//SYSUT8   DD SPACE=(CYL,(1,1))                                         06430001
+//SYSUT9   DD SPACE=(CYL,(1,1))                                         06440001
+//SYSUT10  DD SPACE=(CYL,(1,1))                                         06450001
+//SYSUT11  DD SPACE=(CYL,(1,1))                                         06460001
+//SYSUT12  DD SPACE=(CYL,(1,1))                                         06470001
+//SYSUT13  DD SPACE=(CYL,(1,1))                                         06480001
+//SYSUT14  DD SPACE=(CYL,(1,1))                                         06490001
+//SYSUT15  DD SPACE=(CYL,(1,1))                                         06500001
+//SYSMDECK DD SPACE=(CYL,(1,1))                                         06510001
+//SYSPRINT DD SYSOUT=*                                                  06520001
+//*                                                                     06530001
+//STEP02   EXEC PGM=HEWL,COND=(0,LT)                                    06540001
+//*                                                                     06550001
+//***********************************************************           06560001
+//*                                                         *           06570001
+//* STEP02 RUNS THE BINDER. IT WILL TAKE THE OBJ MODULE     *           06580001
+//* AND WILL OUTPUT THE LOAD MODULE                         *           06590001
+//*                                                         *           06600001
+//* DDNAME            FILE DESCRIPTION                      *           06610001
+//*                                                         *           06620001
+//* SYSLIN            INPUT : OBJECT MODULE                 *           06630001
+//* SYSLIB            INPUT : LIBRARY ROUTINES              *           06640001
+//*                                                         *           06650001
+//* SYSLMOD           OUTPUT: PROGRAM MODULE                *           06660001
+//* SYSPRINT          OUTPUT: MESSAGES                      *           06670001
+//*                                                         *           06680001
+//***********************************************************           06690001
+//*                                                                     06700001
+//SYSLIN   DD DSN=&&OBJ,DISP=(OLD,DELETE,DELETE)                        06710001
+//SYSLIB   DD DSN=CEE.SCEELKED,DISP=SHR                                 06720001
+//SYSLMOD  DD DSN=KC03GD0.CSCI465.LOADLIB(FORMAT),                      06730001
+//         DISP=(MOD,KEEP,KEEP),SPACE=(1024,(50,20,1)),                 06740001
+//         DSNTYPE=LIBRARY                                              06750001
+//SYSPRINT DD SYSOUT=*                                                  06760001
+//*                                                                     06770001
+//STEP03   EXEC PGM=FORMAT,COND=(0,LT)                                  06780001
+//*                                                                     06790001
+//***********************************************************           06800001
+//*                                                         *           06810001
+//* STEP03 RUNS THE PROGRAM. IT WILL TAKE AN INPUT FILE     *           06820001
+//* AND WILL OUTPUT TEXT                                    *           06830001
+//*                                                         *           06840001
+//* DDNAME            FILE DESCRIPTION                      *           06850001
+//*                                                         *           06860001
+//* STEPLIB           INPUT : LIBRARY                       *           06870001
+//* DATAIN            INPUT : INPUTFILE                     *           06880001
+//*                                                         *           06890001
+//* RECOUT            OUTPUT: SYSOUT                        *           06900001
+//*                                                         *           06910001
+//* TEMP              TEMPORTY STORAGE                      *           06920001
+//***********************************************************           06930001
+//*                                                                     06940001
+//STEPLIB  DD DSN=KC03GD0.CSCI465.LOADLIB,                              06950001
+//         DISP=(OLD,KEEP,KEEP)                                         06960001
+//RECOUT   DD SYSOUT=*                                                  06990001
+//                                                                      07000001

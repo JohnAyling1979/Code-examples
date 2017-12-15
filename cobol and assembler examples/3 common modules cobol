@@ -1,0 +1,188 @@
+//ASSIGN3B JOB  ,'JOHN AYLING',MSGCLASS=H                               00010014
+//*                                                                     00020000
+//***********************************************************           00030000
+//*                                                         *           00040000
+//* CSCI 465/565 - FALL 2017                                *           00050000
+//*                                                         *           00060000
+//* ASSIGNMENT 3B - THREE COMMON MODULES                    *           00070000
+//*                                                         *           00080000
+//* PROGRAMMER: JOHN AYLING                                 *           00090000
+//*                                                         *           00100000
+//* DUE DATE: 9/27/2017                                     *           00110000
+//* DUE TIME: 11:59 PM                                      *           00120000
+//*                                                         *           00130000
+//* THE PURPOSE OF THIS PROGRAM IS TO PRACTICE USING THE    *           00140000
+//* THREE COMMON MODULES                                    *           00150000
+//*                                                         *           00160000
+//***********************************************************           00170000
+//*                                                                     00180000
+//STEP01   EXEC PGM=IGYCRCTL,REGION=0M,                                 00190006
+//         PARM='FLAG(I,I),APOST'                                       00191000
+//*                                                                     00200000
+//***********************************************************           00210000
+//*                                                         *           00220000
+//* STEP01 RUNS THE COBOL COM. IT WILL TAKE AN INLINE SOURCE*           00230000
+//* AND WILL OUTPUT BE THE OBJECT MODULE                    *           00240000
+//*                                                         *           00250000
+//* DDNAME            FILE DESCRIPTION                      *           00260000
+//*                                                         *           00270000
+//* SYSIN             INPUT : INLINE SOURCE CODE            *           00280000
+//*                                                         *           00300000
+//* SYSLIN            OUTPUT: OBJECT MODULE                 *           00310000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00320000
+//* SYSUT1            OUTPUT: SCRATCH DATA SET              *           00330000
+//* SYSUT2            OUTPUT: SCRATCH DATA SET              *           00330105
+//* SYSUT3            OUTPUT: SCRATCH DATA SET              *           00330205
+//* SYSUT4            OUTPUT: SCRATCH DATA SET              *           00330305
+//* SYSUT5            OUTPUT: SCRATCH DATA SET              *           00330405
+//* SYSUT6            OUTPUT: SCRATCH DATA SET              *           00330505
+//* SYSUT7            OUTPUT: SCRATCH DATA SET              *           00330605
+//* SYSUT8            OUTPUT: SCRATCH DATA SET              *           00330705
+//* SYSUT9            OUTPUT: SCRATCH DATA SET              *           00330805
+//* SYSUT10           OUTPUT: SCRATCH DATA SET              *           00330905
+//* SYSUT11           OUTPUT: SCRATCH DATA SET              *           00331005
+//* SYSUT12           OUTPUT: SCRATCH DATA SET              *           00331105
+//* SYSUT13           OUTPUT: SCRATCH DATA SET              *           00331205
+//* SYSUT14           OUTPUT: SCRATCH DATA SET              *           00331305
+//* SYSUT15           OUTPUT: SCRATCH DATA SET              *           00331405
+//* SYSMDECK          OUTPUT: INPUT COPY                    *           00331505
+//*                                                         *           00331600
+//***********************************************************           00332000
+//*                                                                     00333000
+//SYSIN    DD *                                                         00334000
+       IDENTIFICATION DIVISION.                                         00335000
+                                                                        00335100
+       PROGRAM-ID.    COBPGM3.                                          00336000
+       AUTHOR.        GEOFFREY D DECKER.                                00337000
+       DATE-WRITTEN.  09/16/2017.                                       00338000
+       DATE-COMPILED.                                                   00339000
+                                                                        00340000
+       ENVIRONMENT DIVISION.                                            00350000
+                                                                        00360000
+       INPUT-OUTPUT SECTION.                                            00370002
+                                                                        00380000
+       FILE-CONTROL.                                                    00390002
+                                                                        00400000
+           SELECT INPUT-FILE ASSIGN TO COBIN3.                          00410000
+           SELECT PRINT-FILE ASSIGN TO COBOUT3.                         00420000
+                                                                        00430000
+       DATA DIVISION.                                                   00440000
+                                                                        00450000
+       FILE SECTION.                                                    00460000
+                                                                        00470000
+       FD  INPUT-FILE                                                   00480000
+           RECORDING MODE IS F.                                         00490000
+                                                                        00500000
+       01  INPUT-RECORD                        PIC X(80).               00510000
+                                                                        00511000
+       FD  PRINT-FILE                                                   00512000
+           RECORDING MODE IS F.                                         00513000
+                                                                        00514000
+       01  PRINT-RECORD                        PIC X(132).              00515000
+                                                                        00516000
+       WORKING-STORAGE SECTION.                                         00517000
+                                                                        00518000
+       01  EOF-FLAG                            PIC X VALUE 'N'.         00519000
+                                                                        00519100
+       01  PRINT-LINE.                                                  00519200
+           05  OUTPUT-RECORD                   PIC X(80).               00519300
+           05  FILLER                          PIC X(52)  VALUE SPACES. 00519400
+                                                                        00519500
+       PROCEDURE DIVISION.                                              00519600
+                                                                        00520000
+       0000-MAIN.                                                       00530000
+                                                                        00540000
+           OPEN INPUT  INPUT-FILE                                       00550000
+                OUTPUT PRINT-FILE.                                      00560000
+                                                                        00570000
+           READ INPUT-FILE                                              00580000
+             AT END MOVE 'Y' TO EOF-FLAG                                00590000
+           END-READ.                                                    00600000
+                                                                        00610000
+           PERFORM 1000-WRITE-RECORDS                                   00620000
+             UNTIL EOF-FLAG = 'Y'.                                      00630000
+                                                                        00640000
+           CLOSE INPUT-FILE                                             00650000
+                 PRINT-FILE.                                            00660000
+                                                                        00661000
+           GOBACK.                                                      00662000
+                                                                        00663000
+       0000-EXIT. EXIT.                                                 00664000
+                                                                        00665000
+       1000-WRITE-RECORDS.                                              00666000
+                                                                        00667000
+           MOVE INPUT-RECORD TO OUTPUT-RECORD.                          00668000
+                                                                        00669000
+           WRITE PRINT-RECORD FROM PRINT-LINE AFTER 1.                  00669100
+                                                                        00669200
+           READ INPUT-FILE                                              00669300
+             AT END MOVE 'Y' TO EOF-FLAG                                00669400
+           END-READ.                                                    00669500
+                                                                        00669600
+       1000-EXIT. EXIT.                                                 00669700
+/*                                                                      00670000
+//SYSLIN   DD DSN=&&OBJ,SPACE=(CYL,(1,1)),                              00690000
+//         DISP=(MOD,PASS,DELETE)                                       00700009
+//SYSUT1   DD SPACE=(CYL,(1,1))                                         00710000
+//SYSUT2   DD SPACE=(CYL,(1,1))                                         00710101
+//SYSUT3   DD SPACE=(CYL,(1,1))                                         00710201
+//SYSUT4   DD SPACE=(CYL,(1,1))                                         00710301
+//SYSUT5   DD SPACE=(CYL,(1,1))                                         00710401
+//SYSUT6   DD SPACE=(CYL,(1,1))                                         00710501
+//SYSUT7   DD SPACE=(CYL,(1,1))                                         00710601
+//SYSUT8   DD SPACE=(CYL,(1,1))                                         00710701
+//SYSUT9   DD SPACE=(CYL,(1,1))                                         00710801
+//SYSUT10  DD SPACE=(CYL,(1,1))                                         00710901
+//SYSUT11  DD SPACE=(CYL,(1,1))                                         00711001
+//SYSUT12  DD SPACE=(CYL,(1,1))                                         00711101
+//SYSUT13  DD SPACE=(CYL,(1,1))                                         00711201
+//SYSUT14  DD SPACE=(CYL,(1,1))                                         00711301
+//SYSUT15  DD SPACE=(CYL,(1,1))                                         00711401
+//SYSMDECK DD SPACE=(CYL,(1,1))                                         00711501
+//SYSPRINT DD SYSOUT=*                                                  00720000
+//*                                                                     00730000
+//STEP02   EXEC PGM=HEWL,COND=(0,LT)                                    00740007
+//*                                                                     00750000
+//***********************************************************           00760000
+//*                                                         *           00770000
+//* STEP02 RUNS THE BINDER. IT WILL TAKE THE OBJ MODULE     *           00780000
+//* AND WILL OUTPUT THE LOAD MODULE                         *           00790000
+//*                                                         *           00800000
+//* DDNAME            FILE DESCRIPTION                      *           00810000
+//*                                                         *           00820000
+//* SYSLIN            INPUT : OBJECT MODULE                 *           00830000
+//* SYSLIB            INPUT : LIBRARY ROUTINES              *           00840000
+//*                                                         *           00850000
+//* SYSLMOD           OUTPUT: PROGRAM MODULE                *           00860000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00870000
+//*                                                         *           00890000
+//***********************************************************           00900000
+//*                                                                     00910000
+//SYSLIN   DD DSN=&&OBJ,DISP=(OLD,DELETE,DELETE)                        00920009
+//SYSLIB   DD DSN=CEE.SCEELKED,DISP=SHR                                 00930000
+//SYSLMOD  DD DSN=KC03GD0.CSCI465.LOADLIB(COBPGM3),                     00940001
+//         DISP=(MOD,KEEP,KEEP),SPACE=(1024,(50,20,1)),                 00950011
+//         DSNTYPE=LIBRARY                                              00951012
+//SYSPRINT DD SYSOUT=*                                                  00960000
+//*                                                                     00980000
+//STEP03   EXEC PGM=COBPGM3,COND=(0,LT)                                 00990001
+//*                                                                     01000000
+//***********************************************************           01010000
+//*                                                         *           01020000
+//* STEP03 RUNS THE PROGRAM. IT WILL TAKE AN INPUT FILE     *           01030001
+//* AND WILL OUTPUT TEXT                                    *           01040001
+//*                                                         *           01050000
+//* DDNAME            FILE DESCRIPTION                      *           01060000
+//*                                                         *           01070000
+//* STEPLIB           INPUT : LIBRARY                       *           01080000
+//* COBIN3            INPUT : INPUTFILE                     *           01090001
+//*                                                         *           01100000
+//* COBOUT3           OUTPUT: SYSOUT                        *           01110001
+//*                                                         *           01120000
+//***********************************************************           01130000
+//*                                                                     01140000
+//STEPLIB  DD DSN=KC03GD0.CSCI465.LOADLIB,                              01150000
+//         DISP=(OLD,KEEP,KEEP)                                         01160000
+//COBIN3   DD DSN=KC02322.CSCI465.DATAFA17(DATA3),DISP=SHR              01170003
+//COBOUT3  DD SYSOUT=*                                                  01180003
+//                                                                      01190004

@@ -1,0 +1,33 @@
+//KC03GD0A JOB ,'AYLING',MSGCLASS=H                                     00010003
+//**********************************************************            00020002
+//*                                                        *            00021002
+//* CSCI 465/565 - FALL 2017                               *            00030002
+//*                                                        *            00040002
+//* ASSIGNMENT 1 - COPY AND EXECUTE JCL                    *            00050002
+//*                                                        *            00060002
+//* PROGRAMMER: JOHN AYLING                                *            00070002
+//*                                                        *            00080002
+//* DUE DATE: 09/01/2017                                   *            00090002
+//* DUE TIME: 11:59 PM                                     *            00100002
+//*                                                        *            00110002
+//* THE PURPOSE OF THIS JOB IS TO ALLOCATE A NEW PDSE      *            00120002
+//**********************************************************            00130002
+//*                                                                     00140002
+//JSTEP01 EXEC PGM=IEFBR14                                              00150002
+//*                                                                     00160002
+//* DELETES THE EXISTING PDSE                                           00170002
+//*                                                                     00180002
+//DD1   DD DSN=KC03GD0.CSCI465.LOADLIB,                                 00190002
+//      SPACE=(TRK,(1,1,1)),                                            00200002
+//      DISP=(MOD,DELETE,DELETE)                                        00210002
+//*                                                                     00220002
+//JSTEP02 EXEC PGM=IEFBR14                                              00230002
+//*                                                                     00240002
+//* ALLOCATES A PDSE TO HOLD PROGRAMS                                   00250002
+//*                                                                     00260002
+//DD1   DD DSN=KC03GD0.CSCI465.LOADLIB,                                 00270002
+//      DCB=(RECFM=U,LRECL=0,BLKSIZE=4096),                             00280002
+//      DSNTYPE=LIBRARY,                                                00290002
+//      SPACE=(CYL,(9,5,5)),                                            00300002
+//      DISP=(NEW,KEEP,DELETE)                                          00310002
+//                                                                      00320002

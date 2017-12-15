@@ -1,0 +1,287 @@
+//KC03GD0A JOB  ,'JOHN AYLING',MSGCLASS=H                               00010053
+//*                                                                     00020000
+//***********************************************************           00030000
+//*                                                         *           00040000
+//* CSCI 465/565 - FALL 2017                                *           00050000
+//*                                                         *           00060000
+//* ASSIGNMENT 4 - THREE COMMON MODULES                     *           00070000
+//*                                                         *           00080000
+//* PROGRAMMER: JOHN AYLING                                 *           00090000
+//*                                                         *           00100000
+//* DUE DATE: 10/06/2017                                    *           00110000
+//* DUE TIME: 11:59 PM                                      *           00120000
+//*                                                         *           00130000
+//* THE PURPOSE OF THIS PROGRAM IS TO CREATE A SINGLE REPORT*           00140000
+//* FROM A DATA FILE WITH AN UBKNOWN NUMBER OF RECORDS      *           00150000
+//*                                                         *           00160000
+//***********************************************************           00170000
+//*                                                                     00180000
+//STEP01   EXEC PGM=IGYCRCTL,REGION=0M,                                 00190000
+//         PARM='FLAG(I,I),APOST'                                       00191000
+//*                                                                     00192000
+//***********************************************************           00193000
+//*                                                         *           00194000
+//* STEP01 RUNS THE COBOL COM. IT WILL TAKE AN INLINE SOURCE*           00195000
+//* AND WILL OUTPUT BE THE OBJECT MODULE                    *           00196000
+//*                                                         *           00197000
+//* DDNAME            FILE DESCRIPTION                      *           00198000
+//*                                                         *           00199000
+//* SYSIN             INPUT : INLINE SOURCE CODE            *           00200000
+//*                                                         *           00210000
+//* SYSLIN            OUTPUT: OBJECT MODULE                 *           00220000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00230000
+//* SYSUT1            OUTPUT: SCRATCH DATA SET              *           00240000
+//* SYSUT2            OUTPUT: SCRATCH DATA SET              *           00250000
+//* SYSUT3            OUTPUT: SCRATCH DATA SET              *           00260000
+//* SYSUT4            OUTPUT: SCRATCH DATA SET              *           00270000
+//* SYSUT5            OUTPUT: SCRATCH DATA SET              *           00280000
+//* SYSUT6            OUTPUT: SCRATCH DATA SET              *           00290000
+//* SYSUT7            OUTPUT: SCRATCH DATA SET              *           00300000
+//* SYSUT8            OUTPUT: SCRATCH DATA SET              *           00310000
+//* SYSUT9            OUTPUT: SCRATCH DATA SET              *           00320000
+//* SYSUT10           OUTPUT: SCRATCH DATA SET              *           00330000
+//* SYSUT11           OUTPUT: SCRATCH DATA SET              *           00331000
+//* SYSUT12           OUTPUT: SCRATCH DATA SET              *           00331100
+//* SYSUT13           OUTPUT: SCRATCH DATA SET              *           00331200
+//* SYSUT14           OUTPUT: SCRATCH DATA SET              *           00331300
+//* SYSUT15           OUTPUT: SCRATCH DATA SET              *           00331400
+//* SYSMDECK          OUTPUT: INPUT COPY                    *           00331500
+//*                                                         *           00331600
+//***********************************************************           00331700
+//*                                                                     00331800
+//SYSIN    DD *                                                         00331900
+       IDENTIFICATION DIVISION.                                         00332000
+                                                                        00333000
+      *******************************************************           00333106
+      *                                                     *           00333206
+      * FUNCTION:  THIS PROGRAM PRODUCES FORMATED ACCOUNT   *           00333306
+      *            INFORMATION                              *           00333406
+      *                                                     *           00333506
+      * INPUT:     ACCOUNT-FILE                             *           00333610
+      *            SEQUENTIAL FILE CONTAINING AN UNKNOWN    *           00333708
+      *            NUMBER OF RECORDS                        *           00333808
+      *                                                     *           00333908
+      * OUTPUT:    PRINT-FILE                              *            00334011
+      *            FORMATED RECORD INFORMATION AND TOTAL    *           00334108
+      *            DEPOSIT AMOUNT                           *           00334208
+      *                                                     *           00334308
+      * ENTRY CONDITIONS:  NONE                             *           00334408
+      *                                                     *           00334508
+      * EXIT CONDITIONS:   NONE                             *           00334608
+      *                                                     *           00334708
+      * NOTES:             NONE                             *           00334808
+      *                                                     *           00334906
+      *******************************************************           00335008
+       PROGRAM-ID.    COBPGM4.                                          00335100
+       AUTHOR.        JOHNN AYLING.                                     00335200
+       DATE-WRITTEN.  10/06/2017.                                       00336001
+       DATE-COMPILED.                                                   00337000
+                                                                        00338000
+       ENVIRONMENT DIVISION.                                            00339000
+                                                                        00340000
+       INPUT-OUTPUT SECTION.                                            00350000
+                                                                        00360000
+       FILE-CONTROL.                                                    00370000
+                                                                        00380000
+           SELECT ACCOUNT-FILE ASSIGN TO DATAIN.                        00390010
+           SELECT PRINT-FILE   ASSIGN TO RECOUT.                        00400010
+                                                                        00410000
+       DATA DIVISION.                                                   00420000
+                                                                        00430000
+       FILE SECTION.                                                    00440000
+                                                                        00441031
+      *******************************************************           00442031
+      * ACCOUNT FILE IS USED AS INPUT. IT CONTAINS AN       *           00443031
+      * UNKNOWN NUMBER OF RECORDS. EACH RECORD CONTAINS THE *           00444031
+      * BRANCH NAME,BROKER NAME,DEPOSIT, AND COMMISSION FLAG*           00445031
+      *******************************************************           00446031
+                                                                        00450000
+       FD  ACCOUNT-FILE                                                 00460010
+           RECORDING MODE IS F.                                         00470000
+                                                                        00480000
+       01  ACCOUNT-RECORD                      PIC X(80).               00490010
+                                                                        00500000
+      *******************************************************           00501031
+      * PRINT-FILE CONTAINS THE GENERIC PRINT LINE TO PRINT *           00502032
+      * OUTPUT                                              *           00503032
+      *******************************************************           00504032
+       FD  PRINT-FILE                                                   00510000
+           RECORDING MODE IS F.                                         00511000
+                                                                        00512000
+       01  PRINT-RECORD                        PIC X(132).              00513000
+                                                                        00514000
+       WORKING-STORAGE SECTION.                                         00515000
+                                                                        00516000
+      *********************************************************         00516108
+      *                                                       *         00516208
+      * FIELD:             DESCRIPTION:                       *         00516310
+      *                                                       *         00516410
+      * RUNNING-DEPOSIT    HOLDS THE RUNNING TOTAL FOR THE    *         00516541
+      *                    DEPOSITS                           *         00516610
+      *                                                       *         00516710
+      * ACCOUNT-LINE       USED TO DIVIDE THE IN RECORD INTO  *         00516810
+      *                    IT'S SEPARTE FIELDS                *         00516910
+      *                                                       *         00517010
+      * PRINT-LINE         USED TO FORMAT THE DATA FOR OUTPUT *         00517110
+      *                                                       *         00517210
+      * TOTAL-LINE         USED TO PRINT OUT THE TOTAL DEPOSIT*         00517328
+      *                    AMMOUNT                            *         00517428
+      *                                                       *         00517528
+      *********************************************************         00517610
+                                                                        00517710
+       01  FLAGS.                                                       00517809
+           05  EOF-FLAG                  PIC X VALUE 'N'.               00517916
+                                                                        00518000
+       01  ACCUMULATORS.                                                00518109
+           05  RUNNING-DEPOSIT           PIC S9(13)V99 PACKED-DECIMAL   00518260
+                                         VALUE 0.                       00518339
+                                                                        00518509
+       01  WORK-LINES.                                                  00518657
+           05  ACCOUNT-LINE.                                            00518741
+               10  ACCOUNT-BRANCH        PIC X(25).                     00518841
+               10  ACCOUNT-BROKER        PIC X(25).                     00518941
+               10  ACCOUNT-DEPOSIT       PIC S9(11)V99.                 00519041
+               10  FILLER                PIC X.                         00519141
+               10  ACCOUNT-COMMISSION    PIC 9.                         00519241
+               10  FILLER                PIC X(15).                     00519341
+           05  PRINT-LINE.                                              00520041
+               10  PRINT-BRANCH          PIC X(25).                     00520244
+               10  FILLER                PIC X(19) VALUE ' '.           00520348
+               10  PRINT-BROKER          PIC X(25).                     00520443
+               10  FILLER                PIC X(19) VALUE ' '.           00520548
+               10  PRINT-DEPOSIT         PIC $$$,$$$,$$$,$$9.99.        00520841
+               10  FILLER                PIC X(24) VALUE ' '.           00520956
+               10  PRINT-COMMISSION      PIC Z9.                        00521054
+           05  TOTAL-LINE.                                              00521341
+               10  FILLER                PIC X(66) VALUE ' '.           00521454
+               10  FILLER                PIC X(15)                      00521554
+                                         VALUE 'TOTAL DEPOSITS:'.       00521627
+               10  TOTAL-DEPOSIT         PIC $$,$$$,$$$,$$$,$$$,$$9.99. 00521742
+               10  FILLER                PIC X(26) VALUE ' '.           00521854
+                                                                        00521918
+       PROCEDURE DIVISION.                                              00522000
+                                                                        00522110
+      *******************************************************           00522210
+      *                                                     *           00522310
+      * THIS ROUTINE CONTROLS THE FLOW OF LOGIC TO PROCESS  *           00522410
+      * THE CUSTOMER FILE AND PRINT THE ACCOUNT INFORMATION *           00522510
+      *                                                     *           00522610
+      *******************************************************           00522710
+                                                                        00522800
+       0000-MAIN.                                                       00522900
+                                                                        00523000
+           OPEN INPUT  ACCOUNT-FILE                                     00523111
+                OUTPUT PRINT-FILE.                                      00523200
+                                                                        00523300
+           READ ACCOUNT-FILE                                            00523412
+             AT END MOVE 'Y' TO EOF-FLAG                                00524007
+           END-READ.                                                    00525007
+                                                                        00526007
+           READ ACCOUNT-FILE INTO ACCOUNT-LINE                          00530032
+             AT END MOVE 'Y' TO EOF-FLAG                                00540000
+           END-READ.                                                    00550000
+                                                                        00560000
+           PERFORM 1000-PROCESS-RECS                                    00570032
+             UNTIL EOF-FLAG = 'Y'.                                      00580000
+                                                                        00590000
+           MOVE RUNNING-DEPOSIT TO TOTAL-DEPOSIT.                       00591041
+           WRITE PRINT-RECORD FROM TOTAL-LINE AFTER 2.                  00591127
+                                                                        00592021
+           CLOSE ACCOUNT-FILE                                           00600013
+                 PRINT-FILE.                                            00610000
+                                                                        00620000
+           GOBACK.                                                      00630000
+                                                                        00640000
+       0000-EXIT. EXIT.                                                 00650000
+                                                                        00660000
+      *******************************************************           00660128
+      *                                                     *           00660228
+      * THIS ROUTINE MOVES THE READ IN DATA TO A RECORD      *          00660331
+      * LINE TO SEPARATE THE FIELDS. THEN MOVES THOSE TO A   *          00660431
+      * FORMATED LINE FOR PRINTING. FINALLY READS THE NEXT   *          00660531
+      * RECORD                                               *          00660631
+      *                                                      *          00660731
+      ********************************************************          00660831
+       1000-PROCESS-RECS.                                               00661061
+                                                                        00662000
+           MOVE ACCOUNT-BRANCH TO PRINT-BRANCH.                         00663241
+           MOVE ACCOUNT-BROKER TO PRINT-BROKER.                         00663341
+           MOVE ACCOUNT-DEPOSIT TO PRINT-DEPOSIT.                       00663441
+           MOVE ACCOUNT-COMMISSION TO PRINT-COMMISSION.                 00663541
+                                                                        00664000
+           COMPUTE RUNNING-DEPOSIT ROUNDED = RUNNING-DEPOSIT +          00664259
+             ACCOUNT-DEPOSIT.                                           00664358
+                                                                        00664418
+           WRITE PRINT-RECORD FROM PRINT-LINE AFTER 2.                  00665027
+                                                                        00668021
+           READ ACCOUNT-FILE INTO ACCOUNT-LINE                          00669232
+             AT END MOVE 'Y' TO EOF-FLAG                                00669306
+           END-READ.                                                    00669406
+                                                                        00669500
+       1000-EXIT. EXIT.                                                 00669900
+/*                                                                      00670000
+//SYSLIN   DD DSN=&&OBJ,SPACE=(CYL,(1,1)),                              00670100
+//         DISP=(MOD,PASS,DELETE)                                       00670200
+//SYSUT1   DD SPACE=(CYL,(1,1))                                         00670300
+//SYSUT2   DD SPACE=(CYL,(1,1))                                         00670400
+//SYSUT3   DD SPACE=(CYL,(1,1))                                         00670500
+//SYSUT4   DD SPACE=(CYL,(1,1))                                         00670600
+//SYSUT5   DD SPACE=(CYL,(1,1))                                         00671000
+//SYSUT6   DD SPACE=(CYL,(1,1))                                         00680000
+//SYSUT7   DD SPACE=(CYL,(1,1))                                         00690000
+//SYSUT8   DD SPACE=(CYL,(1,1))                                         00700000
+//SYSUT9   DD SPACE=(CYL,(1,1))                                         00710000
+//SYSUT10  DD SPACE=(CYL,(1,1))                                         00710100
+//SYSUT11  DD SPACE=(CYL,(1,1))                                         00710200
+//SYSUT12  DD SPACE=(CYL,(1,1))                                         00710300
+//SYSUT13  DD SPACE=(CYL,(1,1))                                         00710400
+//SYSUT14  DD SPACE=(CYL,(1,1))                                         00710500
+//SYSUT15  DD SPACE=(CYL,(1,1))                                         00710600
+//SYSMDECK DD SPACE=(CYL,(1,1))                                         00710700
+//SYSPRINT DD SYSOUT=*                                                  00710800
+//*                                                                     00710900
+//STEP02   EXEC PGM=HEWL,COND=(0,LT)                                    00711000
+//*                                                                     00712000
+//***********************************************************           00713000
+//*                                                         *           00714000
+//* STEP02 RUNS THE BINDER. IT WILL TAKE THE OBJ MODULE     *           00715000
+//* AND WILL OUTPUT THE LOAD MODULE                         *           00716000
+//*                                                         *           00717000
+//* DDNAME            FILE DESCRIPTION                      *           00718000
+//*                                                         *           00719000
+//* SYSLIN            INPUT : OBJECT MODULE                 *           00720000
+//* SYSLIB            INPUT : LIBRARY ROUTINES              *           00730000
+//*                                                         *           00740000
+//* SYSLMOD           OUTPUT: PROGRAM MODULE                *           00750000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00760000
+//*                                                         *           00770000
+//***********************************************************           00780000
+//*                                                                     00790000
+//SYSLIN   DD DSN=&&OBJ,DISP=(OLD,DELETE,DELETE)                        00800000
+//SYSLIB   DD DSN=CEE.SCEELKED,DISP=SHR                                 00810000
+//SYSLMOD  DD DSN=KC03GD0.CSCI465.LOADLIB(COBPGM4),                     00820036
+//         DISP=(MOD,KEEP,KEEP),SPACE=(1024,(50,20,1)),                 00830000
+//         DSNTYPE=LIBRARY                                              00840000
+//SYSPRINT DD SYSOUT=*                                                  00850000
+//*                                                                     00860000
+//STEP03   EXEC PGM=COBPGM4,COND=(0,LT)                                 00870036
+//*                                                                     00880000
+//***********************************************************           00890000
+//*                                                         *           00900000
+//* STEP03 RUNS THE PROGRAM. IT WILL TAKE AN INPUT FILE     *           00910000
+//* AND WILL OUTPUT TEXT                                    *           00920000
+//*                                                         *           00930000
+//* DDNAME            FILE DESCRIPTION                      *           00940000
+//*                                                         *           00950000
+//* STEPLIB           INPUT : LIBRARY                       *           00960000
+//* DATAIN            INPUT : INPUTFILE                     *           00970001
+//*                                                         *           00980000
+//* RECOUT            OUTPUT: SYSOUT                        *           00990001
+//*                                                         *           01000000
+//***********************************************************           01010000
+//*                                                                     01020000
+//STEPLIB  DD DSN=KC03GD0.CSCI465.LOADLIB,                              01030000
+//         DISP=(OLD,KEEP,KEEP)                                         01040000
+//DATAIN   DD DSN=KC02322.CSCI465.DATAFA17(DATA4),DISP=SHR              01050005
+//RECOUT   DD SYSOUT=*                                                  01060001
+//                                                                      01070000

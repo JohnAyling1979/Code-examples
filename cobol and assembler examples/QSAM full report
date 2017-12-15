@@ -1,0 +1,519 @@
+//KC03GD0A JOB  ,'JOHN AYLING',MSGCLASS=H                               00010099
+//*                                                                     00020000
+//***********************************************************           00030000
+//*                                                         *           00040000
+//* CSCI 465/565 - FALL 2017                                *           00050000
+//*                                                         *           00060000
+//* ASSIGNMENT 6                                            *           00070001
+//*                                                         *           00080000
+//* PROGRAMMER: JOHN AYLING                                 *           00090000
+//*                                                         *           00100000
+//* DUE DATE:                                               *           00110001
+//* DUE TIME: 11:59 PM                                      *           00120000
+//*                                                         *           00130000
+//* THE PURPOSE OF THIS PROGRAM IS TO CREATE TWO REPORTS    *           00140001
+//* IN ASSEMBLY                                             *           00150001
+//*                                                         *           00160000
+//***********************************************************           00170000
+//*                                                                     00180000
+//STEP01   EXEC PGM=ASMA90,PARM=ASA                                     00190000
+//*                                                                     00200000
+//***********************************************************           00210000
+//*                                                         *           00220000
+//* STEP01 RUNS THE ASSEMBLER. IT WILL TAKE AN INLINE SOURCE*           00230000
+//* AND WILL OUTPUT BE THE OBJECT MODULE                    *           00240000
+//*                                                         *           00250000
+//* DDNAME            FILE DESCRIPTION                      *           00260000
+//*                                                         *           00270000
+//* SYSIN             INPUT : INLINE SOURCE CODE            *           00280000
+//* SYSLIB            INPUT : IBM MACRO LOCATION            *           00290000
+//*                                                         *           00300000
+//* SYSLIN            OUTPUT: OBJECT MODULE                 *           00310000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00320000
+//* SYSUT1            OUTPUT: SCRATCH DATA SET              *           00330000
+//*                                                         *           00340000
+//***********************************************************           00350000
+//*                                                                     00360000
+//SYSIN    DD *                                                         00370000
+         PRINT NOGEN                 MACRO CALL SUPPRESSION             00380005
+ASSIGN6  CSECT                       BEGIN ASMPGM3                      00390099
+         STM   14,12,12(13)          SAVE CALLER'S REGS                 00400000
+         LR    12,15                 SET R12 TO R15                     00410000
+         LR    11,12                 COPY BASE ADDRESS TO 11            00411099
+         AHI   11,4096               ADD 4096 TO ADDRESS                00412099
+         USING ASSIGN6,12,11         ESTABLISH 12 AND 11 AS BAE REG     00420099
+         LA    14,MAINREGS           R14 -> CURRENT SAVE AREA           00430000
+         ST    13,4(,14)             SAVE CALLER'S SAVE AREA ADDR       00440000
+         ST    14,8(,14)             SAVE CURRENT SAVE AREA ADDR        00450000
+         LR    13,14                 R13 -> CURRENT SAVE AREA           00460000
+*OPEN OUTPUT FILE                                                       00470099
+         OPEN  (OFLEDCB,(OUTPUT))    OPEN INPUT FILE                    00480099
+         LTR   15,15                 CHECK FOR SUCCESSFUL OPEN          00490000
+         BZ    OPENOK1               BRANCH IF SUCCESSFUL TO OPENOK1    00500099
+         ABEND 999,DUMP              ABEND IF OPEN FAILS & DISPLAY 999  00510099
+*OPEN OUTPUT FILE                                                       00520000
+OPENOK1  OPEN  (IFLEDCB,(INPUT))     OPEN OUTPUT FILE                   00530099
+         LTR   15,15                 CHECK FOR SUCCESSFUL OPEN          00540000
+         BZ    OPENOK2               BRANCH IF SUCCESSFUL TO OPENOK2    00550099
+         MVC   OERRMSG(25),IERR      MOVE ERROR MESSAGE TO LINE         00551099
+         PUT   OFLEDCB               GET ADDRESS                        00552099
+         MVC   0(133,1),OERRLN       MOVE LINE TO OUTPUT                00553099
+         CLOSE (OFLEDCB)             CLOSE ALL OPEN FILES               00554099
+         B     ENDPGM                GO TO END                          00560099
+*OPEN TEMP FILE                                                         00570000
+OPENOK2  OPEN  (TFLEDCB,(OUTPUT))    OPEN TEMP FILE                     00580000
+         LTR   15,15                 CHECK FOR SUCCESSFUL OPEN          00590009
+         BZ    OPENOK3               BRANCH TO OPENOK3 IF SUCCESSFUL    00600099
+         MVC   OERRMSG(25),TERR      MOVE ERROR MESSAGE TO LINE         00601099
+         PUT   OFLEDCB               GET ADDRESS                        00602099
+         MVC   0(133,1),OERRLN       MOVE LINE TO OUTPUT                00603099
+         CLOSE (OFLEDCB,,IFLEDCB)    CLOSE ALL OPEN FILES               00603199
+         B     ENDPGM                GO TO END                          00604099
+*GET INPUT FILE HEADER RECORD                                           00620000
+OPENOK3  GET   IFLEDCB,IFLEHDR       GET FILE HEADER                    00630000
+         CLI   EOFFLG1,C'Y'          MAKE SURE RECORD IS NOT EMPTY      00640099
+         BNE   NOTEMPTY              IF IT WAS NOT EMPTY BRANCH DOWN    00650099
+         PUT   OFLEDCB               GET OUTPUT ADDRESS                 00650199
+         MVC   0(133,1),OERRLN       MOVE IN ERROR LINE                 00650299
+         CLOSE (IFLEDCB,,TFLEDCB,,OFLEDCB) CLOSE ALL DCB                00650399
+         B     ENDPGM                GO TO END                          00650499
+NOTEMPTY TIME  DEC,DATETIME,LINKAGE=SYSTEM,DATETYPE=MMDDYYYY            00670099
+         ED    OHEDDTE(11),DATETIME+8 MOVE DATE TO HEADER               00672099
+         MVI   OHED1,C'1'            PUT IN NEW PAGE CARRAGE CONTROL    00673099
+         ED    OHEDTIME(9),DATETIME  MOVE TIME TO HEADER                00674099
+         MVI   OHED2,C' '            SINGLE SPACE CARRAGE CONTROL       00675099
+         PACK  PSHRPRC(3),ISHRPRC(5) PACK THE SHARE AMOUNT              00680000
+         PACK  P1COMPCT(4),I1COMPCT(6) PACK THE FIRST %                 00681000
+         PACK  P2COMPCT(4),I2COMPCT(6) PACK THE SECOND %                00681100
+         PACK  P3COMPCT(4),I3COMPCT(6) PACK THE THRID %                 00681200
+         LA    2,99                  USING REG 2 FOR LINE COUNT         00681395
+         LA    3,15                  USING REG 3 FOR CUTOFF             00682053
+         LA    1,OHEDSHR+3           SETS THE DEFAULT FOR '$'           00690000
+         EDMK  OHEDSHR(7),PSHRPRC    MOVE SHARE PRICE TO PRINT          00710000
+         BCTR  1,0                   -1 FOR REG 1 TO GO BEFORE NUMBER   00720095
+         MVI   0(1),C'$'             PLACE THE $                        00730027
+         MVC   OHEDTTL1(25),IRPTTTL  MOVE TITLE TO HEADER               00740000
+*PROCESS RECORDS AND PRINT FIRST REPORT                                 00750000
+         GET   IFLEDCB,IFLEREC       READ FIRST RECORD                  00750100
+REPORT1  CLI   EOFFLG1,C'Y'           CHECK FOR END OF INPUT DATA       00760099
+         BE    SUM1                  BRANCH TO SUMMARY IF EOF           00770040
+         CR    2,3                   CHECK LINE COUNT                   00780000
+         BL    PRNTLN1               IF LINE COUNT IS LESS THEN 15 SKIP 00790000
+         AP    PPAGENBR,=PL1'1'      ADD ONE TO PAGE                    00800000
+         SR    2,2                   ZERO LINE COUNT                    00810059
+         MVC   OHEDPAGE(4),PAGEPAT   MOVE EDIT MARK TO PAGE AREA        00820000
+         ED    OHEDPAGE(4),PPAGENBR  MOVE PAGE NUMBER TO PRINTLINE      00830000
+         MVI   OHEDPAGE,C':'         PUT : AFTER PAGE DUE TO SPACING    00831000
+         PUT   OFLEDCB               PRINT HEADERS                      00840000
+         MVC   0(133,1),OHED1                                           00850099
+         PUT   OFLEDCB                                                  00850100
+         MVC   0(133,1),OHED2                                           00860099
+         PUT   OFLEDCB                                                  00860100
+         MVC   0(133,1),OHED3                                           00870000
+         PUT   OFLEDCB                                                  00870100
+         MVC   0(133,1),OHED4                                           00880000
+         PUT   OFLEDCB                                                  00880100
+         MVC   0(133,1),OHED5                                           00890000
+PRNTLN1  PACK  PDEPAMT(7),IFLEDEP(13) PACK THE DEPOSIT                  00890100
+         MVC   OPRTBRNH(25),IFLEBRNH MOVE BRANCH NAME TO PRINT LINE     00891000
+         MVC   OPRTBRKR(25),IFLEBRKR MOVE BROKER NAME TO PRINT LINE     00910000
+         LA    1,OPRNTDEP+14         SET DEFAULT FOR $                  00921000
+         MVC   OPRNTDEP(18),DEPPAT   LOAD EDIT PATERN                   00922000
+         EDMK  OPRNTDEP(18),PDEPAMT  MOVE DEPOSIT TO PRINT LINE         00923000
+         BCTR  1,0                   SHIFT LOCATION OVER 1              00924000
+         MVI   0(1),C'$'             PLACE THE $                        00925050
+         ZAP   PSHRCNT(12),PDEPAMT(7) COPY DEPOSIT TO SHARE COUNT       00930000
+         SRP   PSHRCNT(12),4,0       SHIFT LEFT 4                       00930100
+         DP    PSHRCNT(12),PSHRPRC(3) DIVIDE DEPOSIT BY SHARE PRICE     00930200
+         SRP   PSHRCNT(9),64-1,5     SHIFT RIGHT 1 AND ROUND            00930300
+         SRP   PSHRCNT(9),1,0        SHIFT LEFT 1                       00930400
+         MVC   OPRNTSHR(23),SHRPAT   MOVE IN THE EDIT MARK              00930500
+         ED    OPRNTSHR(23),PSHRCNT  MOVE SHARE COUNT TO PRINT LINE     00930600
+         ZAP   PCOMMPRC(11),PDEPAMT(7) COPY DEPOSIT TO COMMISION        00930700
+         CLI   IFLECOMM,C'1'         CHECK FLAG                         00930800
+         BE    ONE                                                      00931095
+         CLI   IFLECOMM,C'2'         CHECK FLAG                         00931100
+         BE    TWO                                                      00931295
+         CLI   IFLECOMM,C'3'         CHECK FLAG                         00931300
+         BE    THREE                                                    00931495
+         MVC   OPRTCOMM(18),=CL18'BAD COMMISION FLAG' ERROR MESSAGE     00931500
+         ZAP   PCOMMPRC(11),=PL1'0'  SET COMMISSION AMOUNT TO 0         00931600
+         B     BADFLAG                                                  00931700
+ONE      MP    PCOMMPRC(11),P1COMPCT(4) GET COMMISSION                  00931800
+         B     COMM                  SKIP DOWN                          00932000
+TWO      MP    PCOMMPRC(11),P2COMPCT(4) GET COMMISSION                  00932199
+         B     COMM                  SKIP DOWN                          00932200
+THREE    MP    PCOMMPRC(11),P3COMPCT(4) GET COMMISSION                  00932399
+COMM     LA    1,OPRTCOMM+14         DEFAULT FOR $                      00932400
+         SRP   PCOMMPRC(11),64-5,5   ROUND TO CENT                      00932599
+         MVC   OPRTCOMM(18),DEPPAT   LOAD EDIT PATERN                   00932600
+         EDMK  OPRTCOMM(18),PCOMMPRC+4 MOVE COMMISSION TO PRINT LINE    00932799
+         BCTR  1,0                   SHIFT OVER 1                       00932895
+         MVI   0(1),C'$'             PLACE $                            00932995
+BADFLAG  MVI   ORPT1LN,C'0'          DEFAULT RETURN CHARACTER           00933099
+         CHI   2,0                   CHECK FOR FIRST LINE               00933199
+         BNE   MOVE                  SKIP TO MOVE                       00933299
+         MVI   ORPT1LN,C' '          SINGLE SPACE FOR FIRST LINE        00933399
+MOVE     PUT   OFLEDCB               WRITE THE PRINT LINE               00933499
+         MVC   0(133,1),ORPT1LN                                         00940099
+         CP    PSHRCNT(9),PCUTOFF(6) COMPARE SHARE COUNT TO CUTOFF VAL  00940100
+         BL    UNDER                 IF IT IS LESS SKIP OVER            00940200
+         MVC   TEMPNME(25),IFLEBRKR  MOVE NAME TO TEMP LINE             00940300
+         ZAP   TEMPSHR(9),PSHRCNT(9) MOVE SHARE COUNT TO TEMP LINE      00940400
+         PUT   TFLEDCB,TEMPLN        WRITE TO TEMP FILE                 00940500
+UNDER    LA    2,1(,2)               ADD ONE TO LINE COUNT REGS         00940600
+         AP    PRECCNT,=PL1'1'       ADD ONE TO THE RECORD COUNT        00950000
+         AP    PTTLDEP(8),PDEPAMT(7) ADD TO TOTAL DEPOSIT               00951000
+         AP    PTTLSHR(10),PSHRCNT(9) ADD TO TOTAL SHARE COUNT          00960000
+         AP    PTTLCOMM(8),PCOMMPRC(11) ADD TO TOTAL COMMISSION         00960100
+         GET   IFLEDCB,IFLEREC       GET THE NEXT RECORD                00960200
+         B     REPORT1               BRANCH TO TOP OF LOOP              00970040
+*PRINT FIRST SUMMARY                                                    00980000
+SUM1     MVC   OHEDTTL2(42),RPT2TTL2 MOVE IN TOTAL TITLE                00981099
+         AP    PPAGENBR(2),=PL1'1'   ADD ONE TO PAGE                    00982099
+         MVC   OHEDPAGE(4),PAGEPAT   MOVE EDIT MARK TO PAGE AREA        00983000
+         ED    OHEDPAGE(4),PPAGENBR  MOVE PAGE NUMBER TO PRINTLINE      00985000
+         MVI   OHEDPAGE,C':'         PUT : AFTER PAGE                   00986000
+         PUT   OFLEDCB               PRINT HEADERS                      00987000
+         MVC   0(133,1),OHED1                                           00988099
+         PUT   OFLEDCB                                                  00988100
+         MVC   0(133,1),OHED2                                           00989099
+         PUT   OFLEDCB                                                  00989100
+         MVC   0(133,1),OHED3                                           00989200
+         PUT   OFLEDCB                                                  00989300
+         MVC   0(133,1),OTTLHED4                                        00989400
+         PUT   OFLEDCB                                                  00989500
+         MVC   0(133,1),OTTLHED5                                        00989600
+         ED    OTTLREC1(4),PRECCNT   MOVE RECORD COUNT TO PRINT LINE    00989700
+         LA    1,OTTLDEP+17          SETS THE DEFAULT FOR '$'           00990300
+         EDMK  OTTLDEP(21),PTTLDEP   MOVE SHARE PRICE TO PRINT          00990400
+         BCTR  1,0                   -1 FOR REG 1                       00990580
+         MVI   0(1),C'$'             PLACE THE $                        00990680
+         ED    OTTLSHR1(25),PTTLSHR  MOVE TOTAL SHARE COUNT TO PRINT    00990700
+         LA    1,OTTLCOMM+17         DEFAULT FOR $                      00990800
+         EDMK  OTTLCOMM(21),PTTLCOMM MOVE TOTAL COMMISSION TO PRINT     00990900
+         BCTR  1,0                   SHIFT 1 OVER                       00991095
+         MVI   0(1),C'$'             PLACE $                            00991195
+         PUT   OFLEDCB               PRINT SUMMARY LINE                 00991200
+         MVC   0(133,1),OTTLLN                                          00991300
+         CLOSE (TFLEDCB,,IFLEDCB)    CLOSE THE TWO DCBS                 00991499
+*OPEN TEMP FILE FOR INPUT                                               00991500
+         OPEN  (TFLEDCB,(INPUT))     OPEN TEMP FILE FOR INPUT           00991600
+         LTR   15,15                 CHECK FOR SUCCESSFUL OPEN          00991786
+         BZ    OPENOK4               BRANCH TO OPENOK3 IF SUCCESSFUL    00992099
+         MVC   OERRMSG(25),TERR      MOVE ERROR MESSAGE TO LINE         00992199
+         PUT   OFLEDCB               GET ADDRESS                        00992299
+         MVC   0(133,1),OERRLN       MOVE LINE TO OUTPUT                00992399
+         CLOSE (OFLEDCB)             CLOSE ALL OPEN FILES               00992499
+         B     ENDPGM                GO TO END                          00992599
+*RESET STORAGE                                                          00993100
+OPENOK4  LA    2,99                  SET LINE COUNT FOR FIRST HEADERS   00993200
+         ZAP   PPAGENBR(2),=PL1'0'   ZERO PAGE COUNT                    00993399
+         ZAP   PRECCNT(2),=PL1'0'    ZERO RECORD COUNT                  00993499
+         ZAP   PTTLSHR(10),=PL1'0'   ZERO TOTAL SHARE COUNT             00993599
+         MVC   OHEDTTL2(42),RPT3TTL2 MOVE TITLE IN FOR SECOND REPORT    00993700
+*PROCESS RECORDS AND PRINT SECOND REPORT                                00994000
+         GET   TFLEDCB               GET FIRST LINE                     00994100
+REPORT2  CLI   EOFFLG2,C'Y'          CHECK FOR END OF INPUT DATA        00994299
+         BE    SUM2                  BRANCH TO SUMMARY IF EOF           00994399
+         MVC   TEMPLN(34),0(1)       MOVE RECORD LINE FROM MEMORY       00994400
+         CR    2,3                   CHECK LINE COUNT                   00994600
+         BL    PRNTLN2               IF LINE COUNT IS LESS THEN 15 SKIP 00994700
+         AP    PPAGENBR(2),=PL1'1'   ADD ONE TO PAGE                    00994899
+         SR    2,2                   ZERO LINE COUNT                    00995000
+         MVC   OHEDPAGE(4),PAGEPAT   MOVE EDIT MARK TO PAGE AREA        00995100
+         ED    OHEDPAGE(4),PPAGENBR  MOVE PAGE NUMBER TO PRINTLINE      00995200
+         MVI   OHEDPAGE,C':'         PUT : AFTER PAGE                   00995300
+         PUT   OFLEDCB               PRINT HEADERS                      00995400
+         MVC   0(133,1),OHED1                                           00995599
+         PUT   OFLEDCB                                                  00995600
+         MVC   0(133,1),OHED2                                           00995799
+         PUT   OFLEDCB                                                  00995800
+         MVC   0(133,1),OHED42                                          00995900
+         PUT   OFLEDCB                                                  00996000
+         MVC   0(133,1),OHED52                                          00996100
+PRNTLN2  MVC   OREP2NME(25),TEMPNME  MOVE NAME TO PRINT LINE            00996200
+         MVC   OREP2SHR(23),SHRPAT   MOVE IN THE EDIT MARK              00996300
+         ED    OREP2SHR(23),TEMPSHR  MOVE SHARE COUNT TO PRINT LINE     00996400
+         MVI   OREP2LN,C'0'          DEFAULT DOUBLE SPACE               00996599
+         CHI   2,0                   CHECK IF FIRST LINE                00996699
+         BNE   MOVE2                 JUMP DOWN                          00996799
+         MVI   OREP2LN,C' '          SINGLE SPACE FOR FIRST LINE        00996899
+MOVE2    PUT   OFLEDCB               PRINT LINE                         00996999
+         MVC   0(133,1),OREP2LN                                         00997100
+         LA    2,1(,2)               ADD ONE TO LINE COUNT              00997200
+         AP    PRECCNT(2),=PL1'1'    ADD ONE TO RECORD COUNT            00997399
+         AP    PTTLSHR(10),TEMPSHR(9) ADD TO RUNNING TOTAL              00997400
+         GET   TFLEDCB               GET NEXT LINE                      00997500
+         B     REPORT2                                                  00997699
+*PRINT SECOND SUMMARY                                                   01000000
+SUM2     MVC   OHEDTTL2(42),RPT4TTL2 MOVE IN TITLE FOR SUMMARY          01000100
+         MVC   OHEDNME2(26),RPT4HED1 MOVE IN COLUMN HEADER              01000200
+         MVC   OHEDSHR2(17),RPT4HED2                                    01000300
+         AP    PPAGENBR(2),=PL1'1'   ADD ONE TO PAGE                    01000499
+         MVC   OHEDPAGE(4),PAGEPAT   MOVE EDIT MARK TO PAGE AREA        01000500
+         ED    OHEDPAGE(4),PPAGENBR  MOVE PAGE NUMBER TO PRINTLINE      01000700
+         MVI   OHEDPAGE,C':'         PUT : AFTER PAGE                   01000800
+         PUT   OFLEDCB               PRINT HEADERS                      01000900
+         MVC   0(133,1),OHED1                                           01001099
+         PUT   OFLEDCB                                                  01001100
+         MVC   0(133,1),OHED2                                           01001299
+         PUT   OFLEDCB                                                  01001300
+         MVC   0(133,1),OHED42                                          01001400
+         PUT   OFLEDCB                                                  01001500
+         MVC   0(133,1),OHED52                                          01001600
+         ED    OTTL2REC(4),PRECCNT   MOVE RECORD COUNT TO PRINT LINE    01001700
+         ED    OTTL2SHR(25),PTTLSHR  MOVE TOTAL SHARE AMOUNT TO PRINT   01001800
+         PUT   OFLEDCB               PRINT TOTALS                       01001900
+         MVC   0(133,1),OREP2TTL                                        01002000
+*CLEAN UP                                                               01002100
+         CLOSE (TFLEDCB,,OFLEDCB)    CLOSE THE TWO DCBS                 01002299
+ENDPGM   SR    15,15                 RC=0                               01010099
+         L     13,4(,13)             R13 -> CALLER'S SAVE AREA          01020000
+         L     14,12(,13)            RESTORE R14                        01030000
+         LM    0,12,20(13)           RESTORE R0 THROUGH R12             01040000
+         BR    14                    RETURN TO CALLER                   01050000
+*STORAGE                                                                01060000
+         LTORG                       LTORG TO ORGANIZE LITERALS         01070000
+         ORG   ASSIGN6+((*-ASSIGN6+31)/32)*32                           01080099
+         DC    C'HERE IS THE STORAGE FOR THIS PGM'                      01090000
+MAINREGS DC    18F'-1'               MAINREGS FOR STANDARD LINKAGE      01100000
+*PACK STORAGE                                                           01100100
+PPAGENBR DC    PL2'0'                PACK PAGE NUMBER                   01100200
+PRECCNT  DC    PL2'0'                PACK RECORD COUNT                  01120000
+PSHRPRC  DC    PL3'0'                PACK SHARE PRICE                   01120100
+PDEPAMT  DC    PL7'0'                PACK DEPOSIT AMOUNT                01120200
+PTTLDEP  DC    PL8'0'                PACK TOTAL DEPOSIT AMOUNT          01121000
+PSHRCNT  DC    PL12'0'               PACK NUMBER OF SHARES              01150000
+PTTLSHR  DC    PL10'0'               PACK TOTAL NUMBER OF SHARES        01151000
+PCOMMPRC DC    PL11'0'               PACK COMMISSION AMOUNT             01170000
+PTTLCOMM DC    PL8'0'                PACK TOTAL COMMISSION AMOUNT       01170100
+P1COMPCT DC    PL4'0'                PACK THREE COMMISSION LEVELS       01170200
+P2COMPCT DC    PL4'0'                                                   01170300
+P3COMPCT DC    PL4'0'                                                   01170400
+PCUTOFF  DC    PL6'2500000000'       CUT OFF VALUE AMOUNT               01170500
+*PATTERN SECTION                                                        01170700
+DEPPAT   DC    X'4020206B2020206B2020206B2021204B2020' DEP/COMM PATTERN 01170800
+SHRPAT   DC    X'40206B2020206B2020206B2020206B2021204B20202020'        01190000
+PAGEPAT  DC    X'40202120'           PAGE MARK                          01200000
+*STORAGE                                                                01210099
+DATETIME DS    4F                    STORAGE FOR DATE AND TIME          01220299
+RPT2TTL2 DC    CL42'BROKER SALES AND COMMISSIONS REPORT TOTALS'         01220400
+RPT3TTL2 DC    CL42'     BROKER LARGE SHARE SALES REPORT      '         01220500
+RPT4TTL2 DC    CL42'     BROKER LARGE SALES REPORT TOTALS     '         01220600
+RPT4HED1 DC    CL26'NUMBER OF LARGE DEPOSITORS'                         01220700
+RPT4HED2 DC    CL17'TOTAL SHARES SOLD'                                  01220800
+IERR     DC    CL25'INPUT FILE COULD NOT OPEN'                          01220999
+TERR     DC    CL25'TEMP FILE COULD NOT OPEN '                          01221099
+*FILE LINES                                                             01221200
+IFLEHDR  DS    0C                    INPUT HEADER                       01222000
+ISHRPRC  DS    ZL5                   SHARE PRICE                        01230000
+IRPTTTL  DS    CL25                  TITLE                              01240000
+I1COMPCT DS    ZL6                   PERCENT BRAKET ONE                 01250000
+I2COMPCT DS    ZL6                   PERCENT BRAKET TWO                 01260000
+I3COMPCT DS    ZL6                   PERCENT BRAKET THREE               01270000
+         DS    32C                   FILLER                             01280095
+IFLEREC  DS    0C                    INPUT RECORD                       01290000
+IFLEBRNH DS    CL25                  ACCOUNT BRANCH                     01300000
+IFLEBRKR DS    CL25                  ACCOUNT BROKER                     01310000
+IFLEDEP  DS    ZL13                  ACCOUNT DEPOSIT                    01320000
+         DS    1C                    FILLER                             01330000
+IFLECOMM DS    1Z                    COMMISION FLAG                     01340000
+         DS    15C                   FILLER                             01350000
+TEMPLN   DS    0C                    TEMP LINE                          01370000
+TEMPNME  DS    CL25                  BROKER NAME                        01370100
+TEMPSHR  DS    PL9                   SHARE AMOUNT                       01370200
+*HEADER LINES                                                           01370300
+OHED1    DS    0C                    FIRST HEADER                       01370499
+OHEDDTE  DC    X'F021206120206120202020' DATE                           01370599
+         DC    44C' '                SPACES                             01420099
+OHEDTTL1 DS    25C                   FOR TITLE                          01430000
+         DC    45C' '                SPACES                             01440072
+         DC    CL4'PAGE'             PAGE HEADER                        01450072
+OHEDPAGE DS    4C                    PAGE NUMBER                        01460000
+OHED2    DS    0C                    SECOND HEADER                      01470000
+OHEDTIME DC    X'F021207A20207A2020' TIME                               01470199
+         DC    37C' '                SPACES                             01530025
+OHEDTTL2 DC    CL42'   BROKER SALES AND COMMISSIONS REPORT    '         01540000
+         DC    45C' '                SPACES                             01550025
+OHED3    DC    C' '                  THIRD HEADER LINE                  01560000
+         DC    52C' '                SPACES                             01570026
+         DC    CL21'CURRENT SHARE PRICE: '                              01580026
+OHEDSHR  DC    X'402021204B2020'     PRINTING SHARE PRICE               01590000
+         DC    52C' '                SPACES                             01600026
+OHED4    DC    C'0'                  DOUBLE SPACE                       01610000
+         DC    CL11'BRANCH NAME'     COLUMN 1                           01620046
+         DC    20C' '                SPACES                             01630046
+         DC    CL11'BROKER NAME'     COLUMN 2                           01640046
+         DC    24C' '                SPACES                             01650046
+         DC    CL14'DEPOSIT AMOUNT'  COLUMN 3                           01660046
+         DC    17C' '                SPACES                             01670046
+         DC    CL11'SHARES SOLD'     COLUMN 4                           01680046
+         DC    14C' '                SPACES                             01690046
+         DC    CL10'COMMISSION'      COLUMN 5                           01700046
+OHED5    DC    C' '                  SINGLE SPACE                       01710000
+         DC    25C'-'                COLUMN 1                           01720046
+         DC    6C' '                 SPACES                             01730046
+         DC    25C'-'                COLUMN 2                           01740046
+         DC    6C' '                 SPACES                             01750046
+         DC    18C'-'                COLUMN 3                           01760046
+         DC    6C' '                 SPACES                             01770046
+         DC    22C'-'                COLUMN 4                           01780046
+         DC    6C' '                 SPACES                             01790046
+         DC    18C'-'                COLUMN 5                           01800046
+OTTLHED4 DC    1C'-'                 TRIPLE SPACE                       01810000
+         DC    10C' '                SPACES                             01810100
+         DC    CL15'NUMBER OF SALES' COLUMN 1                           01810200
+         DC    11C' '                SPACES                             01810300
+         DC    CL20'TOTAL DEPOSIT AMOUNT'  COLUMN 2                     01810400
+         DC    17C' '                SPACES                             01810500
+         DC    CL17'TOTAL SHARES SOLD' COLUMN 3                         01810600
+         DC    10C' '                SPACES                             01810700
+         DC    CL22'TOTAL COMMISSIONS PAID'  COLUMN 4                   01810800
+         DC    10C' '                SPACES                             01810900
+OTTLHED5 DC    1C' '                 SINGLE SPACE                       01811000
+         DC    10C' '                SPACES                             01811100
+         DC    15C'-'                COLUMN 1                           01811200
+         DC    10C' '                SPACES                             01811300
+         DC    21C'-'                COLUMN 2                           01811400
+         DC    10C' '                SPACES                             01811500
+         DC    24C'-'                COLUMN 3                           01811600
+         DC    10C' '                SPACES                             01811700
+         DC    22C'-'                COLUMN 4                           01811800
+         DC    10C' '                SPACES                             01811900
+OHED42   DC    1C'0'                 DOUBLE SPACE                       01812099
+         DC    30C' '                SPACES                             01812100
+OHEDNME2 DC    CL26'BROKER NAME               '                         01812200
+         DC    29C' '                SPACES                             01812300
+OHEDSHR2 DC    CL17'      SHARES SOLD'                                  01812400
+         DC    30C' '                SPACES                             01812500
+OHED52   DC    1C' '                 SINGEL SPACE                       01812600
+         DC    30C' '                SPACES                             01812700
+         DC    26C'-'                                                   01812800
+         DC    22C' '                SPACES                             01812900
+         DC    24C'-'                                                   01813000
+         DC    30C' '                SPACES                             01813100
+*OUTPUT LINES                                                           01813500
+ORPT1LN  DC    1C'0'                 DOUBLE SPACED                      01813600
+OPRTBRNH DS    CL25                  OUTPUT FOR BRANCH                  01820000
+         DC    6C' '                 FILLER                             01830010
+OPRTBRKR DS    CL25                  OUTPUT FOR BROCKER                 01840000
+         DC    6C' '                 FILLER                             01850010
+OPRNTDEP DS    CL18                  OUTPUT FOR DEPOSIT                 01860000
+         DC    5C' '                 FILLER                             01870095
+OPRNTSHR DS    CL23                  OUTPUT FOR SHARE                   01880000
+         DC    6C' '                 FILLER                             01890010
+OPRTCOMM DS    CL18                  OUTPUT FOR COMMISSION              01900000
+OTTLLN   DC    1C' '                 SINGLE SPACED                      01901099
+         DC    21C' '                SPACES                             02009448
+OTTLREC1 DC    X'40202120'           RECORD COUNT                       02009500
+         DC    10C' '                SAPCES                             02009648
+OTTLDEP  DC    X'40206B2020206B2020206B2020206B2021204B2020'            02009700
+         DC    9C' '                 SPACES                             02009880
+OTTLSHR1 DC    X'402020206B2020206B2020206B2020206B2021204B20202020'    02009900
+         DC    11C' '                SPACES                             02010080
+OTTLCOMM DC    X'40206B2020206B2020206B2020206B2021204B2020'            02010100
+         DC    10C' '                SPACES                             02010280
+OREP2LN  DC    1C'0'                 DOUBLE SPACE                       02010300
+         DC    30C' '                SPACES                             02011790
+OREP2NME DS    CL25                  BROCKER NAME                       02011800
+         DC    24C' '                SPACES                             02011900
+OREP2SHR DS    CL23                  SHARE AMOUNT                       02012000
+         DC    30C' '                SPACES                             02012199
+OREP2TTL DC    1C' '                 SINGLE SPACED                      02012299
+         DC    52C' '                SPACES                             02012300
+OTTL2REC DC    X'40202120'           RECORD COUNT                       02012400
+         DC    21C' '                SAPCES                             02012500
+OTTL2SHR DC    X'402020206B2020206B2020206B2020206B2021204B20202020'    02012600
+         DC    30C' '                SPACES                             02012900
+OERRLN   DC    1C' '                 CARRAGE CONTROL                    02013099
+         DC    58C' '                                                   02013199
+OERRMSG  DC    CL25'     EMPTY INPUT FILE    ' ERROR MESSAGE            02013299
+         DC    58C' '                SPACES                             02013399
+*DCBS                                                                   02013400
+IFLEDCB  DCB   DDNAME=ASMIN,                                           X02013500
+               DEVD=DA,                                                X02020000
+               DSORG=PS,                                               X02030000
+               MACRF=GM,                                               X02040000
+               RECFM=FB,                                               X02050000
+               LRECL=80,                                               X02060000
+               EODAD=EOFRTN1                                            02070099
+*END OF FILE FUNCTION                                                   02071099
+EOFFLG1  DC    C'N'                  EOFFLG FOR INPUT FILE              02072099
+EOFRTN1  MVI   EOFFLG1,C'Y'          SET EOF FLAG TO Y                  02073099
+         BR    14                    BRANCH TO STMT FOLLOWING GET       02074099
+TFLEDCB  DCB   DDNAME=TEMP,                                            X02080000
+               DEVD=DA,                                                X02120006
+               DSORG=PS,                                               X02130006
+               MACRF=(GL,PM),                                          X02140000
+               RECFM=FB,                                               X02150006
+               LRECL=34,                                               X02160000
+               BLKSIZE=340,                                            X02170000
+               EODAD=EOFRTN2                                            02180099
+*END OF FILE FUNCTION                                                   02181099
+EOFFLG2  DC    C'N'                  EOFFLG FOR TEMP FILE               02182099
+EOFRTN2  MVI   EOFFLG2,C'Y'          SET EOF FLAG TO Y                  02183099
+         BR    14                    BRANCH TO STMT FOLLOWING GET       02184099
+OFLEDCB  DCB   DDNAME=ASMOUT,                                          X02190000
+               DEVD=DA,                                                X02200000
+               DSORG=PS,                                               X02210000
+               MACRF=PL,                                               X02220000
+               RECFM=FA,                                               X02230099
+               LRECL=133,                                              X02240000
+               BLKSIZE=133                                              02250000
+         END   ASSIGN6                                                  02260099
+/*                                                                      02270000
+//SYSLIB   DD DSN=SYS1.MACLIB,DISP=SHR                                  02280000
+//SYSLIN   DD DSN=&&OBJ,SPACE=(3040,(40,40),,,ROUND),                   02290000
+//         DISP=(MOD,PASS,DELETE)                                       02300000
+//SYSUT1   DD SPACE=(16384,(120,120),,,ROUND)                           02310000
+//SYSPRINT DD SYSOUT=*                                                  02320000
+//*                                                                     02330000
+//STEP02   EXEC PGM=HEWL,COND=(0,LT)                                    02340000
+//*                                                                     02350000
+//***********************************************************           02360000
+//*                                                         *           02370000
+//* STEP02 RUNS THE BINDER. IT WILL TAKE THE OBJ MODULE     *           02380000
+//* AND WILL OUTPUT THE LOAD MODULE                         *           02390000
+//*                                                         *           02400000
+//* DDNAME            FILE DESCRIPTION                      *           02410000
+//*                                                         *           02420000
+//* SYSLIN            INPUT : OBJECT MODULE                 *           02430000
+//* SYSLIB            INPUT : LIBRARY ROUTINES              *           02440000
+//*                                                         *           02450000
+//* SYSLMOD           OUTPUT: PROGRAM MODULE                *           02460000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           02470000
+//*                                                         *           02480000
+//***********************************************************           02490000
+//*                                                                     02500000
+//SYSLIN   DD DSN=&&OBJ,DISP=(OLD,DELETE,DELETE)                        02510000
+//SYSLIB   DD DSN=CEE.SCEELKED,DISP=SHR                                 02520000
+//SYSLMOD  DD DSN=KC03GD0.CSCI465.LOADLIB(ASSIGN6),                     02530099
+//         DISP=(MOD,KEEP,KEEP),SPACE=(1024,(50,20,1)),                 02540000
+//         DSNTYPE=LIBRARY                                              02550000
+//SYSPRINT DD SYSOUT=*                                                  02560000
+//*                                                                     02570000
+//STEP03   EXEC PGM=ASSIGN6,COND=(0,LT)                                 02580099
+//*                                                                     02590000
+//***********************************************************           02600000
+//*                                                         *           02610000
+//* STEP03 RUNS THE PROGRAM. IT WILL TAKE THE INPUT         *           02620000
+//* FILE AND PRINT THE OUTPUT                               *           02630000
+//*                                                         *           02640000
+//* DDNAME            FILE DESCRIPTION                      *           02650000
+//*                                                         *           02660000
+//* STEPLIB           INPUT : LIBRARY                       *           02670000
+//* ASMIN             INPUT : INPUT FILE                    *           02680000
+//*                                                         *           02690000
+//* ASMOUT            OUTPUT: SYSOUT                        *           02700000
+//*                                                         *           02710000
+//* TEMP              IN/OUT: TEMP FILE FOR HIGH SHARE AMT  *           02710100
+//*                                                         *           02710200
+//***********************************************************           02710300
+//*                                                                     02730000
+//STEPLIB  DD DSN=KC03GD0.CSCI465.LOADLIB,                              02740000
+//         DISP=(OLD,KEEP,KEEP)                                         02750000
+//ASMIN    DD DSN=KC02322.CSCI465.DATAFA17(DATA5),DISP=SHR              02760099
+//TEMP     DD SPACE=(TRK,(1,1)),DISP=(MOD,DELETE,DELETE)                02770000
+//ASMOUT   DD SYSOUT=*                                                  02780000
+//                                                                      02790000

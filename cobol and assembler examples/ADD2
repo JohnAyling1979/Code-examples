@@ -1,0 +1,97 @@
+//KCO3GDOA JOB  ,'JOHN AYLING',MSGCLASS=H                               00010000
+//*                                                                     00020000
+//***********************************************************           00030000
+//*                                                         *           00040000
+//* CSCI 465/565 - FALL 2017                                *           00050000
+//*                                                         *           00060000
+//* ADD 2 NUMBER FROM 360                                   *           00070000
+//*                                                         *           00080000
+//* PROGRAMMER: JOHN AYLING                                 *           00090000
+//*                                                         *           00100000
+//*                                                         *           00160000
+//***********************************************************           00170000
+//*                                                                     00180000
+//STEP01   EXEC PGM=ASMA90,PARM=ASA                                     00190000
+//*                                                                     00200000
+//***********************************************************           00210000
+//*                                                         *           00220000
+//* STEP01 RUNS THE ASSEMBLER. IT WILL TAKE AN INLINE SOURCE*           00230000
+//* AND WILL OUTPUT BE THE OBJECT MODULE                    *           00240000
+//*                                                         *           00250000
+//* DDNAME            FILE DESCRIPTION                      *           00260000
+//*                                                         *           00270000
+//* SYSIN             INPUT : INLINE SOURCE CODE            *           00280000
+//* SYSLIB            INPUT : IBM MACRO LOCATION            *           00290000
+//*                                                         *           00300000
+//* SYSLIN            OUTPUT: OBJECT MODULE                 *           00310000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00320000
+//* SYSUT1            OUTPUT: SCRATCH DATA SET              *           00330000
+//*                                                         *           00340000
+//***********************************************************           00350000
+//*                                                                     00360000
+//SYSIN    DD *                                                         00370000
+         PRINT NOGEN                 MACRO CALL SUPPRESSION             00380000
+ADD2     CSECT                                                          00390000
+         USING ADD2,15                                                  00391002
+         L     1,NUM1                GETS FIRST NUMBER                  00400001
+         L     2,NUM2                GETS SECOND NUMBER                 00410001
+         AR    1,2                   ADDS NUMBERS TOGETHER              00420000
+         ST    1,RES                 SAVES THE NUMBER                   00430001
+         BR    14                    EXIT                               00440003
+NUM1     DC    F'4'                                                     00450001
+NUM2     DC    F'6'                                                     00460001
+RES      DS    F                                                        00470001
+         END   ADD2                                                     00480000
+/*                                                                      01020000
+//SYSLIB   DD DSN=SYS1.MACLIB,DISP=SHR                                  01030000
+//SYSLIN   DD DSN=&&OBJ,SPACE=(3040,(40,40),,,ROUND),                   01040000
+//         DISP=(MOD,PASS,DELETE)                                       01050000
+//SYSUT1   DD SPACE=(16384,(120,120),,,ROUND)                           01060000
+//SYSPRINT DD SYSOUT=*                                                  01070000
+//*                                                                     01080000
+//STEP02   EXEC PGM=HEWL,COND=(0,LT)                                    01090000
+//*                                                                     01100000
+//***********************************************************           01110000
+//*                                                         *           01120000
+//* STEP02 RUNS THE BINDER. IT WILL TAKE THE OBJ MODULE     *           01130000
+//* AND WILL OUTPUT THE LOAD MODULE                         *           01140000
+//*                                                         *           01150000
+//* DDNAME            FILE DESCRIPTION                      *           01160000
+//*                                                         *           01170000
+//* SYSLIN            INPUT : OBJECT MODULE                 *           01180000
+//* SYSLIB            INPUT : LIBRARY ROUTINES              *           01190000
+//*                                                         *           01200000
+//* SYSLMOD           OUTPUT: PROGRAM MODULE                *           01210000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           01220000
+//*                                                         *           01230000
+//***********************************************************           01240000
+//*                                                                     01250000
+//SYSLIN   DD DSN=&&OBJ,DISP=(OLD,DELETE,DELETE)                        01260000
+//SYSLIB   DD DSN=CEE.SCEELKED,DISP=SHR                                 01270000
+//SYSLMOD  DD DSN=KC03GD0.CSCI465.LOADLIB(ADD2),                        01280000
+//         DISP=(MOD,KEEP,KEEP),SPACE=(1024,(50,20,1)),                 01290000
+//         DSNTYPE=LIBRARY                                              01300000
+//SYSPRINT DD SYSOUT=*                                                  01310000
+//*                                                                     01320000
+//STEP03   EXEC PGM=ADD2,COND=(0,LT)                                    01330000
+//*                                                                     01340000
+//***********************************************************           01350000
+//*                                                         *           01360000
+//* STEP03 RUNS THE PROGRAM. IT WILL TAKE THE INPUT         *           01370000
+//* FILE AND PRINT THE OUTPUT                               *           01380000
+//*                                                         *           01390000
+//* DDNAME            FILE DESCRIPTION                      *           01400000
+//*                                                         *           01410000
+//* STEPLIB           INPUT : LIBRARY                       *           01420000
+//* ASMIN3            INPUT : INPUT FILE                    *           01430000
+//*                                                         *           01440000
+//* ASMOUT3           OUTPUT: SYSOUT                        *           01450000
+//*                                                         *           01460000
+//***********************************************************           01470000
+//*                                                                     01480000
+//STEPLIB  DD DSN=KC03GD0.CSCI465.LOADLIB,                              01490000
+//         DISP=(OLD,KEEP,KEEP)                                         01500000
+//ASMIN3   DD DSN=KC02322.CSCI465.DATAFA17(DATA5),DISP=SHR              01510000
+//TEMP     DD SPACE=(TRK,(1,1)),DISP=(NEW,DELETE,DELETE)                01520000
+//ASMOUT3  DD SYSOUT=*                                                  01530000
+//                                                                      01540000

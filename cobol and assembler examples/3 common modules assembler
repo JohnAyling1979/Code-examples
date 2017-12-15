@@ -1,0 +1,144 @@
+//ASSIGN3A JOB  ,'JOHN AYLING',MSGCLASS=H                               00010008
+//*                                                                     00020000
+//***********************************************************           00030000
+//*                                                         *           00040000
+//* CSCI 465/565 - FALL 2017                                *           00050000
+//*                                                         *           00060000
+//* ASSIGNMENT 3A - THREE COMMON MODULES                    *           00070000
+//*                                                         *           00080000
+//* PROGRAMMER: JOHN AYLING                                 *           00090000
+//*                                                         *           00100000
+//* DUE DATE: 9/27/2017                                     *           00110000
+//* DUE TIME: 11:59 PM                                      *           00120000
+//*                                                         *           00130000
+//* THE PURPOSE OF THIS PROGRAM IS TO PRACTICE USING THE    *           00140000
+//* THREE COMMON MODULES                                    *           00150000
+//*                                                         *           00160000
+//***********************************************************           00170000
+//*                                                                     00180000
+//STEP01   EXEC PGM=ASMA90,PARM=ASA                                     00190000
+//*                                                                     00200000
+//***********************************************************           00210000
+//*                                                         *           00220000
+//* STEP01 RUNS THE ASSEMBLER. IT WILL TAKE AN INLINE SOURCE*           00230000
+//* AND WILL OUTPUT BE THE OBJECT MODULE                    *           00240000
+//*                                                         *           00250000
+//* DDNAME            FILE DESCRIPTION                      *           00260000
+//*                                                         *           00270000
+//* SYSIN             INPUT : INLINE SOURCE CODE            *           00280000
+//* SYSLIB            INPUT : IBM MACRO LOCATION            *           00290000
+//*                                                         *           00300000
+//* SYSLIN            OUTPUT: OBJECT MODULE                 *           00310000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00320000
+//* SYSUT1            OUTPUT: SCRATCH DATA SET              *           00330000
+//*                                                         *           00331000
+//***********************************************************           00332000
+//*                                                                     00333000
+//SYSIN    DD *                                                         00334000
+         PRINT  NOGEN                MACRO CALL SUPPRESSION             00335000
+ASMPGM3  CSECT                       BEGIN ASMPGM3                      00336000
+         STM   14,12,12(13)          SAVE CALLER'S REGS                 00337000
+         LR    12,15                 SET R12 TO R15                     00338000
+         USING ASMPGM3,12            ESTABLISH R12 AS 1ST BASE REG      00339000
+         LA    14,MAINREGS           R14 -> CURRENT SAVE AREA           00340000
+         ST    13,4(,14)             SAVE CALLER'S SAVE AREA ADDR       00350000
+         ST    14,8(,14)             SAVE CURRENT SAVE AREA ADDR        00351000
+         LR    13,14                 R13 -> CURRENT SAVE AREA           00352000
+         OPEN  (INDCB,(INPUT))       OPEN INPUT FILE                    00354000
+         LTR   15,15                 CHECK FOR SUCCESSFUL OPEN          00355000
+         BZ    OPENOK1               BRANCH IF SUCCESSFUL TO OPENOK1    00356000
+         ABEND 777,DUMP              ABEND IF OPEN FAILS & DISPLAY 777  00357000
+OPENOK1  OPEN  (OUTDCB,(OUTPUT))     OPEN OUTPUT FILE                   00358000
+         LTR   15,15                 CHECK FOR SUCCESSFUL OPEN          00359000
+         BZ    OPENOK2               BRANCH IF SUCCESSFUL TO OPENOK2    00359100
+         ABEND 888,DUMP              ABEND IF OPEN FAILS & DISPLAY 888  00359200
+OPENOK2  GET   INDCB,INRECORD        READ THE FIRST RECORD              00359300
+LOOP1    CLI   EOFFLAG,C'Y'          CHECK FOR END OF INPUT DATA        00359400
+         BE    ENDLOOP1              BRANCH TO ENDLOOP1 IF EOF          00359500
+         MVC   OUTDATA(80),INRECORD  MOVE FROM INPUT DATA TO PRINT      00359600
+         PUT   OUTDCB,PRINTLN        WRITE THE PRINT DATA               00359700
+         GET   INDCB,INRECORD        GET THE NEXT RECORD                00359800
+         B     LOOP1                 BRANCH TO TOP OF LOOP1             00359900
+ENDLOOP1 CLOSE (INDCB,,OUTDCB)       CLOSE THE TWO DCBS                 00360000
+         L     13,4(,13)             R13 -> CALLER'S SAVE AREA          00370000
+         L     14,12(,13)            RESTORE R14                        00380000
+         LM    0,12,20(13)           RESTORE R0 THROUGH R12             00390000
+         BR    14                    RETURN TO CALLER                   00400000
+         LTORG                       LTORG TO ORGANIZE LITERALS         00410000
+         ORG   ASMPGM3+((*-ASMPGM3+31)/32)*32                           00420000
+         DC    C'HERE IS THE STORAGE FOR THIS PGM'                      00430000
+MAINREGS DC    18F'-1'               MAINREGS FOR STANDARD LINKAGE      00440000
+INRECORD DC    80C'$'                INPUT BUFFER FILL WITH '$'         00450000
+PRINTLN  DC    CL1' '                PRINTLN CARRIAGE CONTROL           00460000
+OUTDATA  DC    80C' '                80 BYTE STORAGE FOR PRINTING       00470000
+         DC    52C' '                FILLER FOR PRINT RECORD            00480000
+INDCB    DCB   DDNAME=ASMIN3,                                          X00490000
+               DEVD=DA,                                                X00500000
+               DSORG=PS,                                               X00510000
+               MACRF=GM,                                               X00520000
+               RECFM=FB,                                               X00530000
+               LRECL=80,                                               X00540000
+               EODAD=EOFRTN                                             00550000
+EOFFLAG  DC    C'N'                  EOFFLAG FOR INPUT FILE             00560000
+EOFRTN   MVI   EOFFLAG,C'Y'          SET EOF FLAG TO Y                  00570000
+         BR    14                    BRANCH TO STMT FOLLOWING GET       00580000
+OUTDCB   DCB   DDNAME=ASMOUT3,                                         X00590000
+               DEVD=DA,                                                X00600000
+               DSORG=PS,                                               X00610000
+               MACRF=PM,                                               X00620000
+               RECFM=FBA,                                              X00630000
+               LRECL=133,                                              X00640000
+               BLKSIZE=133                                              00650000
+         END   ASMPGM3                                                  00660000
+/*                                                                      00670000
+//SYSLIB   DD DSN=SYS1.MACLIB,DISP=SHR                                  00680000
+//SYSLIN   DD DSN=&&OBJ,SPACE=(3040,(40,40),,,ROUND),                   00690000
+//         DISP=(MOD,PASS,DELETE)                                       00700002
+//SYSUT1   DD SPACE=(16384,(120,120),,,ROUND)                           00710000
+//SYSPRINT DD SYSOUT=*                                                  00720000
+//*                                                                     00730000
+//STEP02   EXEC PGM=HEWL,COND=(0,LT)                                    00740002
+//*                                                                     00750000
+//***********************************************************           00760000
+//*                                                         *           00770000
+//* STEP02 RUNS THE BINDER. IT WILL TAKE THE OBJ MODULE     *           00780000
+//* AND WILL OUTPUT THE LOAD MODULE                         *           00790000
+//*                                                         *           00800000
+//* DDNAME            FILE DESCRIPTION                      *           00810000
+//*                                                         *           00820000
+//* SYSLIN            INPUT : OBJECT MODULE                 *           00830000
+//* SYSLIB            INPUT : LIBRARY ROUTINES              *           00840000
+//*                                                         *           00850000
+//* SYSLMOD           OUTPUT: PROGRAM MODULE                *           00860000
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00870000
+//*                                                         *           00890000
+//***********************************************************           00900000
+//*                                                                     00910000
+//SYSLIN   DD DSN=&&OBJ,DISP=(OLD,DELETE,DELETE)                        00920002
+//SYSLIB   DD DSN=CEE.SCEELKED,DISP=SHR                                 00930000
+//SYSLMOD  DD DSN=KC03GD0.CSCI465.LOADLIB(ASMPGM3),                     00940000
+//         DISP=(MOD,KEEP,KEEP),SPACE=(1024,(50,20,1)),                 00950006
+//         DSNTYPE=LIBRARY                                              00951006
+//SYSPRINT DD SYSOUT=*                                                  00960000
+//*                                                                     00980000
+//STEP03   EXEC PGM=ASMPGM3,COND=(0,LT)                                 00990000
+//*                                                                     01000000
+//***********************************************************           01010000
+//*                                                         *           01020000
+//* STEP03 RUNS THE PROGRAM. IT WILL TAKE THE INPUT         *           01030000
+//* FILE AND PRINT THE OUTPUT                               *           01040000
+//*                                                         *           01050000
+//* DDNAME            FILE DESCRIPTION                      *           01060000
+//*                                                         *           01070000
+//* STEPLIB           INPUT : LIBRARY                       *           01080000
+//* ASMIN3            INPUT : INPUT FILE                    *           01090000
+//*                                                         *           01100000
+//* ASMOUT3           OUTPUT: SYSOUT                        *           01110000
+//*                                                         *           01120000
+//***********************************************************           01130000
+//*                                                                     01140000
+//STEPLIB  DD DSN=KC03GD0.CSCI465.LOADLIB,                              01150000
+//         DISP=(OLD,KEEP,KEEP)                                         01160000
+//ASMIN3   DD DSN=KC02322.CSCI465.DATAFA17(DATA3),DISP=SHR              01170000
+//ASMOUT3  DD SYSOUT=*                                                  01180000
+//                                                                      01190001

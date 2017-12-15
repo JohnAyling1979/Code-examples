@@ -1,0 +1,696 @@
+//KC03GD0A JOB  ,'JOHN AYLING',MSGCLASS=H                               00010010
+//*                                                                     00020010
+//***********************************************************           00030096
+//*                                                         *           00040010
+//* CSCI 465/565 - FALL 2017                                *           00050010
+//*                                                         *           00060010
+//* ASSIGNMENT 7                                            *           00070089
+//*                                                         *           00080010
+//* PROGRAMMER: JOHN AYLING                                 *           00090010
+//*                                                         *           00100010
+//* DUE DATE: 11/24/2017                                    *           00110089
+//* DUE TIME: 11:59 PM                                      *           00120010
+//*                                                         *           00130010
+//* THE PURPOSE OF THIS PROGRAM IS TO CREATE A REPORT TO    *           00140098
+//* PRINT THE DAYS WORTH OF BROKER DEPOSIT AND SALES        *           00150098
+//*                                                         *           00160010
+//***********************************************************           00170010
+//*                                                                     00180010
+//STEP01   EXEC PGM=IGYCRCTL,REGION=0M,                                 00190098
+//         PARM='FLAG(I,I),APOST,LIB'                                   00200089
+//*                                                                     00210010
+//***********************************************************           00220010
+//*                                                         *           00230010
+//* STEP01 RUNS THE COBOL COM. IT WILL TAKE AN INLINE SOURCE*           00240010
+//* AND WILL OUTPUT BE THE OBJECT MODULE                    *           00250010
+//*                                                         *           00260010
+//* DDNAME            FILE DESCRIPTION                      *           00270010
+//*                                                         *           00280010
+//* SYSLIB            INPUT : MEMBER CONTAIN CODE TO COPY   *           00290090
+//* SYSIN             INPUT : INLINE SOURCE CODE            *           00300010
+//*                                                         *           00310010
+//* SYSLIN            OUTPUT: OBJECT MODULE                 *           00320010
+//* SYSPRINT          OUTPUT: MESSAGES                      *           00330010
+//* SYSUT1            OUTPUT: SCRATCH DATA SET              *           00340010
+//* SYSUT2            OUTPUT: SCRATCH DATA SET              *           00350010
+//* SYSUT3            OUTPUT: SCRATCH DATA SET              *           00360010
+//* SYSUT4            OUTPUT: SCRATCH DATA SET              *           00370010
+//* SYSUT5            OUTPUT: SCRATCH DATA SET              *           00380010
+//* SYSUT6            OUTPUT: SCRATCH DATA SET              *           00390010
+//* SYSUT7            OUTPUT: SCRATCH DATA SET              *           00400010
+//* SYSUT8            OUTPUT: SCRATCH DATA SET              *           00410010
+//* SYSUT9            OUTPUT: SCRATCH DATA SET              *           00420010
+//* SYSUT10           OUTPUT: SCRATCH DATA SET              *           00430010
+//* SYSUT11           OUTPUT: SCRATCH DATA SET              *           00440010
+//* SYSUT12           OUTPUT: SCRATCH DATA SET              *           00450010
+//* SYSUT13           OUTPUT: SCRATCH DATA SET              *           00460010
+//* SYSUT14           OUTPUT: SCRATCH DATA SET              *           00470010
+//* SYSUT15           OUTPUT: SCRATCH DATA SET              *           00480010
+//* SYSMDECK          OUTPUT: INPUT COPY                    *           00490010
+//*                                                         *           00500010
+//***********************************************************           00510010
+//*                                                                     00520010
+//SYSLIB   DD DSN=KC02322.CSCI465.COPYLIB,DISP=SHR                      00530093
+//SYSIN    DD *                                                         00540010
+       IDENTIFICATION DIVISION.                                         00550010
+                                                                        00560010
+      *******************************************************           00570010
+      *                                                     *           00580010
+      * FUNCTION:     THIS PROGRAM PRODUCES A SINGLE REPORT *           00590098
+      *               DISPLAYING THE DEPOSITS AND SALES     *           00600098
+      *               FOR THE DAY                           *           00610098
+      *                                                     *           00620098
+      * INPUT:        FUND-FILE                             *           00630099
+      *               CONTAINS THE NUMBER AND MUTUAL FUND   *           00640099
+      *                                                     *           00650010
+      *               PRICE-FILE                            *           00660099
+      *               CONTAINS THE CLOSING PRICE FOR SHARE  *           00670099
+      *                                                     *           00680099
+      *               DEPOSIT-FILE                          *           00690099
+      *               CONTAINS THE DEPOSIT AND SALES        *           00700099
+      *                                                     *           00710099
+      * OUTPUT:       PRINT-FILE                            *           00720099
+      *               USED TO PRINT THE DAILY REPORT        *           00730099
+      *                                                     *           00740010
+      * ENTRY CONDITIONS:  NONE                             *           00750010
+      *                                                     *           00760010
+      * EXIT CONDITIONS:   NONE                             *           00770010
+      *                                                     *           00780010
+      * NOTES:             NONE                             *           00790010
+      *                                                     *           00800010
+      *******************************************************           00810010
+       PROGRAM-ID.    ASSIGN7.                                          00820089
+       AUTHOR.        JOHNN AYLING.                                     00830010
+       DATE-WRITTEN.  11/09/2017.                                       00840089
+       DATE-COMPILED.                                                   00850010
+                                                                        00860010
+       ENVIRONMENT DIVISION.                                            00870010
+                                                                        00880010
+       INPUT-OUTPUT SECTION.                                            00890010
+                                                                        00900010
+       FILE-CONTROL.                                                    00910010
+                                                                        00920010
+           SELECT FUND-FILE    ASSIGN TO FUNDIN.                        00930099
+           SELECT PRICE-FILE   ASSIGN TO PRICEIN.                       00940099
+           SELECT SALES-FILE   ASSIGN TO SALEIN.                        00950099
+           SELECT REPORT-FILE  ASSIGN TO REPOUT.                        00960099
+                                                                        00970099
+       DATA DIVISION.                                                   00980010
+                                                                        00990010
+       FILE SECTION.                                                    01000010
+                                                                        01010063
+      *******************************************************           01020099
+      * FUND-FILE CONTAINS THE FUND NUMBER AND NAME. IT WILL*           01030099
+      * BE SORTED ON THE FUND NUMBER                        *           01040099
+      *******************************************************           01050099
+                                                                        01060099
+       FD  FUND-FILE                                                    01070099
+           RECORDING MODE IS F.                                         01080099
+                                                                        01090099
+       COPY FUNDREC.                                                    01100099
+           05  FILLER                            PIC X(53).             01110099
+                                                                        01120099
+      *******************************************************           01130099
+      * PRICE-FILE CONTAINS THE THREE POSSIBLE SHARE PRICES *           01140099
+      * FOR EACH FUND                                       *           01150099
+      *******************************************************           01160099
+                                                                        01170099
+       FD  PRICE-FILE                                                   01180099
+           RECORDING MODE IS F.                                         01190099
+                                                                        01200099
+       COPY PRCREC.                                                     01210099
+                                                                        01220099
+      *******************************************************           01230099
+      * SALES-FILE BRANCH AND BROKER NAMES. ALSO HAS UP TO  *           01240099
+      * FOUR SALES FOR EACH BROKER                          *           01250099
+      *******************************************************           01260099
+                                                                        01270099
+       FD  SALES-FILE                                                   01280099
+           RECORDING MODE IS F.                                         01290099
+                                                                        01300099
+       COPY SALESREC.                                                   01310099
+                                                                        01320099
+       FD  REPORT-FILE                                                  01330099
+           RECORDING MODE IS F.                                         01340099
+                                                                        01350099
+       01  REPORT-RECORD                         PIC X(132).            01360099
+                                                                        01370099
+       WORKING-STORAGE SECTION.                                         01380010
+                                                                        01390099
+      *******************************************************           01400099
+      *                                                     *           01410099
+      * FIELD:                  DESCRIPTION:                *           01420099
+      *                                                     *           01430099
+      * CURRENT-DATE-FIELDS     WILL HOLD THE CURRENT DATE  *           01440099
+      *                         AND TIME                    *           01450099
+      *                                                     *           01460099
+      * FLAGS                   HOLDS THE THREE FLAGS FOR   *           01470099
+      *                         THREE INPUT FILES           *           01480099
+      *                                                     *           01490099
+      * CALCULATORS             STORAGE FOR THE CALULATED   *           01500099
+      *                         SHARE AMMOUNT AND AVG DEPO  *           01510099
+      *                                                     *           01520099
+      * PRICE-SUB               USED TO ACCESS AREA FOR THE *           01530099
+      *                         PRC-RECORD                  *           01540099
+      *                                                     *           01550099
+      * COUNTERS                COUNTERS FOR PAGE,LINE AND  *           01560099
+      *                         BROKER                      *           01570099
+      *                                                     *           01580099
+      * TBL                     A 2 DIMENSIONAL TABLE       *           01590099
+      *                         CONTAINING FUND INFORMATOIN *           01600099
+      *                         THAT HAS BEEN READ IN FROM  *           01610099
+      *                         FILES                       *           01620099
+      *                                                     *           01630099
+      * 5 HEADER LINES AND 1 REPORT LINE                    *           01640099
+      * 2 TOTAL HEADER LINE AND 1 TOTAL REPORT LINE         *           01650099
+      *                                                     *           01660099
+      *******************************************************           01670099
+                                                                        01680099
+       01  CURRENT-DATE-FIELDS.                                         01690099
+           05  CURRENT-DATE.                                            01700099
+               10  CURRENT-YEAR             PIC 9(4).                   01710099
+               10  CURRENT-MONTH            PIC 99.                     01720099
+               10  CURRENT-DAY              PIC 99.                     01730099
+           05  CURRENT-TIME.                                            01740099
+               10  CURRENT-HOUR             PIC 99.                     01750099
+               10  CURRENT-MINUTE           PIC 99.                     01760099
+               10  CURRENT-SECOND           PIC 99.                     01770099
+               10  CURRENT-MS               PIC 99.                     01780099
+           05  DIFF-FROM-GMT                PIC S9(4).                  01790099
+                                                                        01800099
+       01  FLAGS.                                                       01810099
+           05  FUND-FLAG                    PIC X VALUE 'N'.            01820099
+           05  PRICE-FLAG                   PIC X VALUE 'N'.            01830099
+           05  SALES-FLAG                   PIC X VALUE 'N'.            01840099
+                                                                        01850099
+       01  CALCULATORS.                                                 01860099
+           05  CALC-SHR                     PIC S9(10)V999              01870099
+                                            PACKED-DECIMAL VALUE 0.     01880099
+                                                                        01890099
+           05  CALC-AVG-DEP                 PIC S9(9)V99                01900099
+                                            PACKED-DECIMAL VALUE 0.     01910099
+                                                                        01920099
+       01  SUBS.                                                        01930099
+           05  PRICE-SUB                    PIC S9 BINARY SYNC          01940099
+                                            VALUE 0.                    01950099
+                                                                        01960099
+       01  TBL.                                                         01970099
+           05  FUND-SIZE                    PIC S999 BINARY SYNC        01980099
+                                            VALUE 0.                    01990099
+           05  TBL-FUND OCCURS 1 TO 99 DEPENDING ON FUND-SIZE           02000099
+                                            ASCENDING KEY TBL-FUND-NBR  02010099
+                                            INDEXED BY FUND-NDX.        02020099
+       COPY FUNDTBL.                                                    02030099
+                                                                        02040099
+       01  COUNTERS.                                                    02050099
+           05  LINE-CNT                     PIC S99 BINARY SYNC         02060099
+                                            VALUE 99.                   02070099
+                                                                        02080099
+           05  PAGE-CNT                     PIC S999 PACKED-DECIMAL     02090099
+                                            VALUE 0.                    02100099
+                                                                        02110099
+           05  BROKER-CNT                   PIC S999 PACKED-DECIMAL     02120099
+                                            VALUE 0.                    02130099
+                                                                        02140099
+       01  TOTAL-DEPOSIT                    PIC S9(11)V99 VALUE 0       02150099
+                                            PACKED-DECIMAL.             02160099
+                                                                        02170099
+       01  HEADER-1.                                                    02180099
+           05  CURRENT-MONTH                PIC 99.                     02190099
+           05                               PIC X VALUE '/'.            02200099
+           05  CURRENT-DAY                  PIC 99.                     02210099
+           05                               PIC X VALUE '/'.            02220099
+           05  CURRENT-YEAR                 PIC 9(4).                   02230099
+           05                               PIC X(37) VALUE SPACES.     02240099
+           05                               PIC X(39)                   02250099
+              VALUE 'LASALLE MUTUAL FUNDS BROKERAGE SERVICES'.          02260099
+           05                               PIC X(37) VALUE SPACES.     02270099
+           05                               PIC X(6) VALUE 'PAGE: '.    02280099
+           05  HEADER-PAGE-NBR              PIC ZZ9.                    02290099
+                                                                        02300099
+       01  HEADER-2.                                                    02310099
+           05  CURRENT-HOUR                 PIC 99.                     02320099
+           05                               PIC X VALUE ':'.            02330099
+           05  CURRENT-MINUTE               PIC 99.                     02340099
+           05                               PIC X VALUE ':'.            02350099
+           05  CURRENT-SECOND               PIC 99.                     02360099
+           05                               PIC X(47) VALUE SPACES.     02370099
+           05  HEADER-TITLE                 PIC X(23)                   02380099
+                          VALUE 'FUND DAILY SALES REPORT'.              02390099
+           05                               PIC X(54) VALUE SPACES.     02400099
+                                                                        02410099
+       01  HEADER-3.                                                    02420099
+           05                               PIC X(56) VALUE SPACES.     02430099
+           05                               PIC X(4) VALUE 'FUND'.      02440099
+           05                               PIC X(37) VALUE SPACES.     02450099
+           05                               PIC X(7) VALUE 'DEPOSIT'.   02460099
+           05                               PIC X(4) VALUE SPACES.      02470099
+           05                               PIC X(5) VALUE 'PRICE'.     02480099
+           05                               PIC X(19) VALUE SPACES.     02490099
+                                                                        02500099
+       01  HEADER-4.                                                    02510099
+           05                               PIC X(11)                   02520099
+                          VALUE 'BRANCH NAME'.                          02530099
+           05                               PIC X(17) VALUE SPACES.     02540099
+           05                               PIC X(11)                   02550099
+                          VALUE 'BROKER NAME'.                          02560099
+           05                               PIC X(18) VALUE SPACES.     02570099
+           05                               PIC X(3) VALUE 'NBR'.       02580099
+           05                               PIC X(3) VALUE SPACES.      02590099
+           05                               PIC X(9)                    02600099
+                          VALUE 'FUND NAME'.                            02610099
+           05                               PIC X(26) VALUE SPACES.     02620099
+           05                               PIC X(6) VALUE 'AMOUNT'.    02630099
+           05                               PIC X(5) VALUE SPACES.      02640099
+           05                               PIC X(4) VALUE 'FLAG'.      02650099
+           05                               PIC X(8) VALUE SPACES.      02660099
+           05                               PIC X(11)                   02670099
+                          VALUE 'SHARES SOLD'.                          02680099
+                                                                        02690099
+       01  HEADER-5.                                                    02700099
+           05                               PIC X(25) VALUE ALL '-'.    02710099
+           05                               PIC X(3) VALUE SPACES.      02720099
+           05                               PIC X(25) VALUE ALL '-'.    02730099
+           05                               PIC X(3) VALUE SPACES.      02740099
+           05                               PIC X(4) VALUE '----'.      02750099
+           05                               PIC X(3) VALUE SPACES.      02760099
+           05                               PIC X(25) VALUE ALL '-'.    02770099
+           05                               PIC X(4) VALUE SPACES.      02780099
+           05                               PIC X(12) VALUE ALL '-'.    02790099
+           05                               PIC X(4) VALUE SPACES.      02800099
+           05                               PIC X(5) VALUE '-----'.     02810099
+           05                               PIC X(4) VALUE SPACES.      02820099
+           05                               PIC X(15) VALUE ALL '-'.    02830099
+                                                                        02840099
+                                                                        02850099
+       01  REPORT-LN-1.                                                 02860099
+           05  REPORT-BRANCH-NME            PIC X(25).                  02870099
+           05                               PIC X(3) VALUE SPACES.      02880099
+           05  REPORT-BROKER-NME            PIC X(25).                  02890099
+           05                               PIC X(5) VALUE SPACES.      02900099
+           05  REPORT-FUND-NBR              PIC 99.                     02910000
+           05                               PIC X(3) VALUE SPACES.      02920099
+           05  REPORT-FUND-NME              PIC X(25).                  02930099
+           05                               PIC X(2) VALUE SPACES.      02940099
+           05  REPORT-DEP-AMT               PIC $$$,$$$,$$9.99.         02950099
+           05  REPORT-FLG-SHR.                                          02951099
+               10                           PIC X(8) VALUE SPACES.      02960099
+               10  REPORT-PRC-FLG           PIC 9.                      02970099
+               10                           PIC X(4) VALUE SPACES.      02980099
+               10  REPORT-SHR-SLD           PIC ZZ,ZZZ,ZZ9.9999.        02990099
+           05  NO-FUND-FOUND REDEFINES REPORT-FLG-SHR                   02991099
+                                            PIC X(28).                  02992099
+                                                                        02993099
+       01  HEADER-TOTAL-3.                                              03010099
+           05                               PIC X(59) VALUE SPACES.     03020099
+           05                               PIC X(13)                   03030099
+                                            VALUE 'REPORT TOTALS'.      03040099
+           05                               PIC X(60) VALUE SPACES.     03110099
+                                                                        03120099
+       01  HEADER-TOTAL-4.                                              03121099
+           05                               PIC X(30) VALUE SPACES.     03122099
+           05                               PIC X(17)                   03123099
+                                            VALUE 'NUMBER OF BROKERS'.  03124099
+           05                               PIC X(16) VALUE SPACES.     03125099
+           05                               PIC X(13)                   03126099
+                                            VALUE 'TOTAL DEPOSIT'.      03127099
+           05                               PIC X(11) VALUE SPACES.     03128099
+           05                               PIC X(15)                   03129099
+                                            VALUE 'AVERAGE DEPOSIT'.    03129199
+           05                               PIC X(30) VALUE SPACES.     03129299
+       01  HEADER-TOTAL-5.                                              03130099
+           05                               PIC X(30) VALUE SPACES.     03140099
+           05                               PIC X(17) VALUE ALL '-'.    03150099
+           05                               PIC X(11) VALUE SPACES.     03160099
+           05                               PIC X(18) VALUE ALL '-'.    03170099
+           05                               PIC X(11) VALUE SPACES.     03180099
+           05                               PIC X(15) VALUE ALL '-'.    03190099
+           05                               PIC X(30) VALUE SPACES.     03200099
+                                                                        03210099
+       01  REPORT-LN-2.                                                 03220099
+           05                               PIC X(44) VALUE SPACES.     03230099
+           05  REPORT-TOTAL-BROKERS         PIC ZZ9.                    03240099
+           05                               PIC X(11) VALUE SPACES.     03250099
+           05  REPORT-TOTAL-DEPOSIT         PIC $$$,$$$,$$$,$$9.99.     03260099
+           05                               PIC X(11) VALUE SPACES.     03270099
+           05  REPORT-AVERAGE-DEPOSIT       PIC $$$$,$$$,$$9.99.        03280099
+           05                               PIC X(30) VALUE SPACES.     03290099
+                                                                        03300099
+       PROCEDURE DIVISION.                                              03310099
+                                                                        03320010
+      *******************************************************           03330010
+      *                                                     *           03340010
+      * THIS ROUTINE CONTROLS THE FLOW OF LOGIC TO THE MAIN *           03350063
+      * PROGRAM                                             *           03360063
+      *                                                     *           03370010
+      *******************************************************           03380010
+                                                                        03390010
+       0000-MAIN.                                                       03400010
+                                                                        03410089
+      *OPEN THE FIRST FILE FOR THE TABLE                                03420099
+           OPEN INPUT FUND-FILE.                                        03430099
+                                                                        03440099
+      *PRIMING READ                                                     03450099
+           READ FUND-FILE                                               03460099
+             AT END MOVE 'Y' TO FUND-FLAG                               03470099
+           END-READ.                                                    03480099
+                                                                        03490099
+      *BUILD UP FIRST DIMENSION                                         03500099
+           PERFORM 1000-BUILD-FIRST-DIM                                 03510099
+             UNTIL FUND-FLAG = 'Y'.                                     03520099
+                                                                        03530099
+      *CLOSE FILE                                                       03540099
+           CLOSE FUND-FILE.                                             03550099
+                                                                        03560099
+      *OPEN SENDONG FILE FOR THE TABLE                                  03570099
+           OPEN INPUT PRICE-FILE.                                       03580099
+                                                                        03590099
+      *PRIMING READ                                                     03600099
+           READ PRICE-FILE                                              03610099
+             AT END MOVE 'Y' TO PRICE-FLAG                              03620099
+           END-READ.                                                    03630099
+                                                                        03640099
+      *SET INDEX TO START                                               03650099
+           SET FUND-NDX TO 1.                                           03660099
+                                                                        03670099
+      *BUILD SECOND DIMENSION OF THE TABLE                              03680099
+           PERFORM 2000-BUILD-SECOND-DIM                                03690099
+             UNTIL PRICE-FLAG = 'Y'.                                    03700099
+                                                                        03710099
+      *CLOSE FILE                                                       03720099
+           CLOSE PRICE-FILE.                                            03730099
+                                                                        03740099
+      *OPEN LAST FILE AND OUTPUT FILE                                   03750099
+           OPEN INPUT SALES-FILE                                        03760099
+                OUTPUT REPORT-FILE.                                     03770099
+                                                                        03780099
+      *GET DATE AND TIME INFO                                           03790099
+           PERFORM 3000-SET-DATE-TIME.                                  03800099
+                                                                        03810099
+      *PRIMING READ                                                     03820099
+           READ SALES-FILE                                              03830099
+             AT END MOVE 'Y' TO SALES-FLAG                              03840099
+           END-READ.                                                    03850099
+                                                                        03860099
+      *CREATER REPORT                                                   03870099
+           PERFORM 4000-PROCESS-REPORT                                  03880099
+             UNTIL SALES-FLAG = 'Y'.                                    03890099
+                                                                        03900099
+      *USED TO PRINT OUT THE SUMMARY                                    03910099
+           PERFORM 5000-PRINT-SUMMARY.                                  03920099
+                                                                        03930099
+      *CLOSE FILES                                                      03940099
+           CLOSE SALES-FILE                                             03950099
+                 REPORT-FILE.                                           03960099
+                                                                        03970099
+      *RETURN                                                           03980099
+           GOBACK.                                                      03990010
+                                                                        04000010
+       0000-EXIT. EXIT.                                                 04010010
+                                                                        04020099
+      *******************************************************           04030099
+      *                                                     *           04040099
+      * THIS ROUTINE FILLS THE FIRST PART OF THE TABLE      *           04050099
+      *                                                     *           04060099
+      *******************************************************           04070099
+       1000-BUILD-FIRST-DIM.                                            04080099
+                                                                        04090099
+      *INCREASE TABLE SIZE                                              04100099
+           ADD 1 TO FUND-SIZE.                                          04110099
+                                                                        04120099
+      *UPDATE THE CURRENT INDEX                                         04130099
+           SET FUND-NDX TO FUND-SIZE.                                   04140099
+                                                                        04150099
+      *MOVE THE INFORMATION INTO THE TABLE                              04160099
+           MOVE IN-FUND-NBR TO TBL-FUND-NBR(FUND-NDX).                  04170099
+           MOVE IN-FUND-NME TO TBL-FUND-NME(FUND-NDX).                  04180099
+                                                                        04190099
+      *GET NEXT RECORD                                                  04200099
+           READ FUND-FILE                                               04210099
+             AT END MOVE 'Y' TO FUND-FLAG                               04220099
+           END-READ.                                                    04230099
+                                                                        04240099
+      *RETURN                                                           04250099
+       1000-EXIT. EXIT.                                                 04260099
+                                                                        04270099
+      *******************************************************           04280099
+      *                                                     *           04290099
+      * THIS ROUTINE FILLS THE FIRST PART OF THE TABLE      *           04300099
+      *                                                     *           04310099
+      *******************************************************           04320099
+       2000-BUILD-SECOND-DIM.                                           04330099
+                                                                        04340099
+      *TAKE THE 3 SHARE PRICES AND ADD THEM TO THE TABLE                04350099
+           PERFORM VARYING PRICE-SUB FROM 1 BY 1 UNTIL PRICE-SUB > 3    04360099
+             SET TBL-PRC-NDX TO PRICE-SUB                               04370099
+             MOVE IN-FUND-PRC(PRICE-SUB) TO                             04380099
+               TBL-FUND-PRC(FUND-NDX, TBL-PRC-NDX)                      04390099
+           END-PERFORM.                                                 04400099
+                                                                        04410099
+      *GET NEXT RECORD                                                  04420099
+           READ PRICE-FILE                                              04430099
+             AT END MOVE 'Y' TO PRICE-FLAG                              04440099
+           END-READ.                                                    04450099
+                                                                        04460099
+      *SHIFT TO NEXT LEVEL OF THE TABLE                                 04470099
+           SET FUND-NDX UP BY 1.                                        04480099
+                                                                        04490099
+      *RETURN                                                           04500099
+       2000-EXIT. EXIT.                                                 04510099
+                                                                        04520099
+      *******************************************************           04530099
+      *                                                     *           04540099
+      * THIS ROUTINE FILLS THE FIRST PART OF THE TABLE      *           04550099
+      *                                                     *           04560099
+      *******************************************************           04570099
+       3000-SET-DATE-TIME.                                              04580099
+                                                                        04590099
+      *GET THE DATE FROM THE SYSTEM AND MOVE IT TO THE HEADER           04600099
+           MOVE FUNCTION CURRENT-DATE TO CURRENT-DATE-FIELDS.           04610099
+           MOVE CORRESPONDING CURRENT-DATE TO HEADER-1.                 04620099
+           MOVE CORRESPONDING CURRENT-TIME TO HEADER-2.                 04630099
+                                                                        04640099
+      *RETURN                                                           04650099
+       3000-EXIT. EXIT.                                                 04660099
+                                                                        04670099
+      *******************************************************           04680099
+      *                                                     *           04690099
+      * THIS ROUTINE GOES THROUGH THE SALES RECORD IT CALLS *           04700099
+      * A PRINT ROUTINE TO PRINT OUT THE LINES              *           04710099
+      *                                                     *           04720099
+      *******************************************************           04730099
+       4000-PROCESS-REPORT.                                             04740099
+                                                                        04750099
+      *MOVE BRANCH AND BROKER TO PRINT LINE                             04760000
+           MOVE SALES-BRANCH-NME TO REPORT-BRANCH-NME.                  04820099
+           MOVE SALES-BROKER-NME TO REPORT-BROKER-NME.                  04830099
+                                                                        04840099
+                                                                        04850099
+      *PRINT THE DETAIL LINES FOR EACH FUND SOLD                        04860099
+           PERFORM 4200-PRINT-LN VARYING SALE-NDX FROM 1 BY 1 UNTIL     04870099
+             SALE-NDX > 4 OR SALE-FUND-NBR(SALE-NDX) = 0.               04880099
+                                                                        04890099
+           ADD 1 TO BROKER-CNT.                                         04900099
+                                                                        04910099
+      *GET NEXT RECORD                                                  04920099
+           READ SALES-FILE                                              04930099
+             AT END MOVE 'Y' TO SALES-FLAG                              04940099
+           END-READ.                                                    04950099
+                                                                        04960099
+      *RETURN                                                           04970099
+       4000-EXIT. EXIT.                                                 04980099
+                                                                        04990099
+      *******************************************************           05000099
+      *                                                     *           05010099
+      * THIS ROUTINE UPDATE THE PAGE COUNT AND PRINTS THE   *           05020099
+      * HEADERS                                             *           05030099
+      *                                                     *           05040099
+      *******************************************************           05050099
+       4100-PRINT-HEADER.                                               05060099
+                                                                        05070099
+      *INCREASE PAGE COUNT AND RESET LINE COUNT                         05080099
+           ADD 1 TO PAGE-CNT.                                           05090099
+           MOVE 0 TO LINE-CNT.                                          05100099
+                                                                        05110099
+      *UPDATE PAGE NUMBER ON HEADER                                     05120099
+           MOVE PAGE-CNT TO HEADER-PAGE-NBR.                            05130099
+                                                                        05140099
+      *PRINT OUT THE HEADERS                                            05150099
+           WRITE REPORT-RECORD FROM HEADER-1 AFTER PAGE.                05160099
+           WRITE REPORT-RECORD FROM HEADER-2.                           05170099
+           WRITE REPORT-RECORD FROM HEADER-3 AFTER 2.                   05180099
+           WRITE REPORT-RECORD FROM HEADER-4.                           05190099
+           WRITE REPORT-RECORD FROM HEADER-5.                           05200099
+                                                                        05210099
+      *RETURN                                                           05220099
+       4100-EXIT. EXIT.                                                 05230099
+                                                                        05240099
+      *******************************************************           05250099
+      *                                                     *           05260099
+      * THIS ROUTINE UPDATES THE LINE INFO AND PRINTS IT OUT*           05270099
+      *                                                     *           05280099
+      *******************************************************           05290099
+       4200-PRINT-LN.                                                   05300099
+                                                                        05310099
+      *MOVE FUND NUMBER AND PRINT LINE TO THE PRINT LINE                05320099
+           MOVE SALE-FUND-NBR(SALE-NDX) TO REPORT-FUND-NBR.             05330099
+           MOVE SALE-DEP-AMT(SALE-NDX) TO REPORT-DEP-AMT.               05340099
+                                                                        05350099
+      *SEARCH TABLE FOR MATCHING FUND NUMBER                            05360099
+           SEARCH ALL TBL-FUND                                          05370099
+      *IF NOT FOUND DISPLAY ERROR AND MOVE 0S TO PRINT LINE             05380099
+             AT END                                                     05390099
+               MOVE '**** FUND NOT FOUND *****' TO REPORT-FUND-NME      05400099
+               MOVE SPACES TO NO-FUND-FOUND                             05410099
+      *MOVE IN FOUND INFO AND CACULATE SHARES SOLD                      05430099
+             WHEN TBL-FUND-NBR(FUND-NDX) = SALE-FUND-NBR(SALE-NDX)      05440099
+               MOVE SALE-PRC-FLG(SALE-NDX) TO REPORT-PRC-FLG            05450099
+               MOVE TBL-FUND-NME(FUND-NDX) TO REPORT-FUND-NME           05460099
+               SET TBL-PRC-NDX TO SALE-PRC-FLG(SALE-NDX)                05470099
+               COMPUTE CALC-SHR ROUNDED = SALE-DEP-AMT(SALE-NDX) /      05480099
+                 TBL-FUND-PRC(FUND-NDX, TBL-PRC-NDX)                    05490099
+               MOVE CALC-SHR TO REPORT-SHR-SLD                          05500099
+           END-SEARCH.                                                  05510099
+                                                                        05520000
+      *PRINT HEADER WHEN LINE COUNT >= TO 15                            05520100
+           IF LINE-CNT >= 15                                            05520200
+             PERFORM 4100-PRINT-HEADER                                  05520300
+           END-IF.                                                      05520400
+                                                                        05520500
+      *PRINT THE LINE                                                   05530099
+           WRITE REPORT-RECORD FROM REPORT-LN-1 AFTER 2.                05540099
+                                                                        05550099
+      *INCREASE LINE COUNT AND MOVE SPACES IN FOR THE REMAINING LINES   05560099
+           ADD 1 TO LINE-CNT.                                           05570099
+           COMPUTE TOTAL-DEPOSIT ROUNDED = TOTAL-DEPOSIT +              05580099
+             SALE-DEP-AMT(SALE-NDX)                                     05590099
+           MOVE SPACES TO REPORT-BRANCH-NME.                            05600099
+           MOVE SPACES TO REPORT-BROKER-NME.                            05610099
+                                                                        05620099
+      *RETURN                                                           05630099
+       4200-EXIT. EXIT.                                                 05640099
+                                                                        05650099
+      *******************************************************           05660099
+      *                                                     *           05670099
+      * THIS ROUTINE PRINTS OUT THE FINAL SUMMARY PAGE     T*           05680099
+      *                                                     *           05690099
+      *******************************************************           05700099
+       5000-PRINT-SUMMARY.                                              05710099
+                                                                        05720099
+      *INCREASE PAGE COUNT AND RESET LINE COUNT                         05730099
+           ADD 1 TO PAGE-CNT.                                           05740099
+                                                                        05750099
+      *UPDATE PAGE NUMBER ON HEADER                                     05760099
+           MOVE PAGE-CNT TO HEADER-PAGE-NBR.                            05770099
+                                                                        05780099
+      *PRINT OUT THE HEADERS                                            05790099
+           WRITE REPORT-RECORD FROM HEADER-1 AFTER PAGE.                05810099
+           WRITE REPORT-RECORD FROM HEADER-2.                           05820099
+           WRITE REPORT-RECORD FROM HEADER-TOTAL-3 AFTER 2.             05830099
+           WRITE REPORT-RECORD FROM HEADER-TOTAL-4 AFTER 2.             05840099
+           WRITE REPORT-RECORD FROM HEADER-TOTAL-5.                     05841099
+                                                                        05850099
+      *CALCULATE AVG DEP                                                05860099
+           COMPUTE CALC-AVG-DEP ROUNDED = TOTAL-DEPOSIT /               05870099
+             BROKER-CNT.                                                05880099
+                                                                        05890099
+      *MOVE EVERYTHING TO THE PRINT LINE                                05900099
+           MOVE BROKER-CNT TO REPORT-TOTAL-BROKERS.                     05910099
+           MOVE TOTAL-DEPOSIT TO REPORT-TOTAL-DEPOSIT                   05920099
+           MOVE CALC-AVG-DEP TO REPORT-AVERAGE-DEPOSIT.                 05930099
+                                                                        05940099
+      *PRINT OUT LINE                                                   05950099
+           WRITE REPORT-RECORD FROM REPORT-LN-2 AFTER 2.                05960099
+                                                                        05970099
+      *RETURN                                                           05980099
+       5000-EXIT. EXIT.                                                 05990099
+/*                                                                      06000099
+//SYSLIN   DD DSN=&&OBJ,SPACE=(CYL,(1,1)),                              06010010
+//         DISP=(MOD,PASS,DELETE)                                       06020010
+//SYSUT1   DD SPACE=(CYL,(1,1))                                         06030010
+//SYSUT2   DD SPACE=(CYL,(1,1))                                         06040010
+//SYSUT3   DD SPACE=(CYL,(1,1))                                         06050010
+//SYSUT4   DD SPACE=(CYL,(1,1))                                         06060010
+//SYSUT5   DD SPACE=(CYL,(1,1))                                         06070010
+//SYSUT6   DD SPACE=(CYL,(1,1))                                         06080010
+//SYSUT7   DD SPACE=(CYL,(1,1))                                         06090010
+//SYSUT8   DD SPACE=(CYL,(1,1))                                         06100010
+//SYSUT9   DD SPACE=(CYL,(1,1))                                         06110010
+//SYSUT10  DD SPACE=(CYL,(1,1))                                         06120010
+//SYSUT11  DD SPACE=(CYL,(1,1))                                         06130010
+//SYSUT12  DD SPACE=(CYL,(1,1))                                         06140010
+//SYSUT13  DD SPACE=(CYL,(1,1))                                         06150010
+//SYSUT14  DD SPACE=(CYL,(1,1))                                         06160010
+//SYSUT15  DD SPACE=(CYL,(1,1))                                         06170010
+//SYSMDECK DD SPACE=(CYL,(1,1))                                         06180010
+//SYSPRINT DD SYSOUT=*                                                  06190010
+//*                                                                     06200010
+//STEP02   EXEC PGM=HEWL,COND=(0,LT)                                    06210098
+//*                                                                     06220010
+//***********************************************************           06230010
+//*                                                         *           06240010
+//* STEP02 RUNS THE BINDER. IT WILL TAKE THE OBJ MODULE     *           06250010
+//* AND WILL OUTPUT THE LOAD MODULE                         *           06260010
+//*                                                         *           06270010
+//* DDNAME            FILE DESCRIPTION                      *           06280010
+//*                                                         *           06290010
+//* SYSLIN            INPUT : OBJECT MODULE                 *           06300010
+//* SYSLIB            INPUT : LIBRARY ROUTINES              *           06310010
+//*                                                         *           06320010
+//* SYSLMOD           OUTPUT: PROGRAM MODULE                *           06330010
+//* SYSPRINT          OUTPUT: MESSAGES                      *           06340010
+//*                                                         *           06350010
+//***********************************************************           06360010
+//*                                                                     06370010
+//SYSLIN   DD DSN=&&OBJ,DISP=(OLD,DELETE,DELETE)                        06380010
+//SYSLIB   DD DSN=CEE.SCEELKED,DISP=SHR                                 06390010
+//SYSLMOD  DD DSN=KC03GD0.CSCI465.LOADLIB(ASSIGN7),                     06400089
+//         DISP=(MOD,KEEP,KEEP),SPACE=(1024,(50,20,1)),                 06410010
+//         DSNTYPE=LIBRARY                                              06420010
+//SYSPRINT DD SYSOUT=*                                                  06430010
+//*                                                                     06440010
+//STEP03   EXEC PGM=SORT,PARM='CMP=CLC',COND=(0,LT)                     06450099
+//*                                                                     06460099
+//***********************************************************           06470099
+//*                                                         *           06480099
+//* STEP03 RUNS THE IBM SORT PROGRAM                        *           06490099
+//*                                                         *           06500099
+//* DDNAME            FILE DESCRIPTION                      *           06510099
+//*                                                         *           06520099
+//* SORTIN            INPUT : FILE TO BE SORTED             *           06530099
+//* SYSIN             INPUT : INFO ON HOW TO SORT           *           06540099
+//*                                                         *           06550099
+//* SORTOUT           OUTPUT: SORTED VERSON OF THE FILE     *           06560099
+//* SYSPRINT          OUTPUT: MESSAGES                      *           06570099
+//*                                                         *           06580099
+//***********************************************************           06590099
+//*                                                                     06600099
+//SORTIN   DD DSN=KC02322.CSCI465.DATAFA17(DATA7A),DISP=SHR             06610098
+//SORTOUT  DD DSN=&&SORTED,SPACE=(TRK,(1,5)),DISP=(NEW,PASS,DELETE)     06620099
+//SYSOUT   DD SYSOUT=*                                                  06630098
+//SYSIN    DD *                                                         06640098
+  SORT FIELDS=(1,2,ZD,A)                                                06650098
+/*                                                                      06660098
+//STEP04   EXEC PGM=ASSIGN7,COND=(0,LT)                                 06670095
+//*                                                                     06680010
+//***********************************************************           06690010
+//*                                                         *           06700010
+//* STEP03 RUNS THE PROGRAM. IT WILL TAKE AN INPUT FILE     *           06710010
+//* AND WILL OUTPUT TEXT                                    *           06720010
+//*                                                         *           06730010
+//* DDNAME            FILE DESCRIPTION                      *           06740010
+//*                                                         *           06750010
+//* STEPLIB           INPUT : LIBRARY                       *           06760010
+//* DATAIN            INPUT : INPUTFILE                     *           06770010
+//*                                                         *           06780010
+//* REPOUT            OUTPUT: OUTPUT FOR REPORT             *           06790099
+//*                                                         *           06800010
+//***********************************************************           06810010
+//*                                                                     06820010
+//STEPLIB  DD DSN=KC03GD0.CSCI465.LOADLIB,                              06830010
+//         DISP=(OLD,KEEP,KEEP)                                         06840010
+//FUNDIN   DD DSN=&&SORTED,DISP=(OLD,DELETE,DELETE)                     06850099
+//PRICEIN  DD DSN=KC02322.CSCI465.DATAFA17(DATA7B),DISP=SHR             06860099
+//SALEIN   DD DSN=KC02322.CSCI465.DATA7(SALES),DISP=SHR                 06870099
+//REPOUT   DD SYSOUT=*                                                  06880099
+//                                                                      06890010
