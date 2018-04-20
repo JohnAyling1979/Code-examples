@@ -87,7 +87,7 @@ int binarySearch( const vector<int>& inputVec, int x)
 	//perform a binary search for x on the full vectory
 	range=equal_range(inputVec.begin(),inputVec.end(),x);
 
-	//if the two items are == in the pair it means not found and return -1
+	//if the first item == the value return the location
 	if(*(range.first)==x)
 		return range.first-inputVec.begin();
 	else
