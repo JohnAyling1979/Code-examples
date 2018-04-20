@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Hawaii</string>
+    <string name="playuku">Play the Ukulele</string>
+    <string name="playdrum">Play the Drums</string>
+    <string name="stopuku">Pause the Ukulele</string>
+    <string name="stopdrum">Pause the Drums</string>
+</resources>
