@@ -1,0 +1,245 @@
+1                    J E S 2  J O B  L O G  --  S Y S T E M  S 0 W 1  --  N O D E  Z O S K C T R         
+0 
+ 10.03.00 JOB01877 ---- THURSDAY,  05 OCT 2017 ----
+ 10.03.00 JOB01877  IRR010I  USERID KC02322  IS ASSIGNED TO THIS JOB.
+ 10.03.00 JOB01877  ICH70001I KC02322  LAST ACCESS AT 10:00:19 ON THURSDAY, OCTOBER 5, 2017
+ 10.03.00 JOB01877  $HASP373 KC02322A STARTED - INIT 1    - CLASS A        - SYS S0W1
+ 10.03.01 JOB01877  -                                         --TIMINGS (MINS.)--            ----PAGING COUNTS---
+ 10.03.01 JOB01877  -JOBNAME  STEPNAME PROCSTEP    RC   EXCP    TCB    SRB  CLOCK   SERV  PG   PAGE   SWAP    VIO SWAPS
+ 10.03.01 JOB01877  -KC02322A                      00     42 ******    .00     .0    123   0      0      0      0     0
+ 10.03.01 JOB01877  -KC02322A ENDED.  NAME-GEOFFREY D. DECKER   TOTAL TCB CPU TIME=   .00  TOTAL ELAPSED TIME=    .0
+ 10.03.01 JOB01877  $HASP395 KC02322A ENDED
+0------ JES2 JOB STATISTICS ------
+-  05 OCT 2017 JOB EXECUTION DATE
+-          183 CARDS READ
+-          241 SYSOUT PRINT RECORDS
+-            0 SYSOUT PUNCH RECORDS
+-           17 SYSOUT SPOOL KBYTES
+-         0.00 MINUTES EXECUTION TIME
+ !! END OF JES SPOOL FILE !!
+        1 //KC02322A JOB ,'GEOFFREY D. DECKER',MSGCLASS=H                         JOB01877
+        2 //JSTEP01  EXEC PGM=ASSIST                                                      
+        3 //STEPLIB  DD DSN=KC00NIU.ASSIST.LOADLIB,DISP=SHR                               
+        4 //SYSPRINT DD SYSOUT=*                                                          
+        5 //SYSIN    DD *                                                                 
+          //*                                                                             
+        6 //FT05F001 DD *                                                                 
+          //*                                                                             
+        7 //FT06F001 DD SYSOUT=*                                                          
+          //*                                                                             
+        8 //SYSPRINT DD SYSOUT=*                                                          
+ !! END OF JES SPOOL FILE !!
+ ICH70001I KC02322  LAST ACCESS AT 10:00:19 ON THURSDAY, OCTOBER 5, 2017
+ IEF236I ALLOC. FOR KC02322A JSTEP01
+ IGD103I SMS ALLOCATED TO DDNAME STEPLIB
+ IEF237I JES2 ALLOCATED TO SYSPRINT
+ IEF237I JES2 ALLOCATED TO SYSIN
+ IEF237I JES2 ALLOCATED TO FT05F001
+ IEF237I JES2 ALLOCATED TO FT06F001
+ IEF237I JES2 ALLOCATED TO SYSPRINT
+ IEF142I KC02322A JSTEP01 - STEP WAS EXECUTED - COND CODE 0000
+ IGD104I KC00NIU.ASSIST.LOADLIB                       RETAINED,  DDNAME=STEPLIB 
+ IEF285I   KC02322.KC02322A.JOB01877.D0000103.?         SYSOUT        
+ IEF285I   KC02322.KC02322A.JOB01877.D0000101.?         SYSIN         
+ IEF285I   KC02322.KC02322A.JOB01877.D0000102.?         SYSIN         
+ IEF285I   KC02322.KC02322A.JOB01877.D0000104.?         SYSOUT        
+ IEF285I   KC02322.KC02322A.JOB01877.D0000105.?         SYSOUT        
+ IEF373I STEP/JSTEP01 /START 2017278.1003
+ IEF032I STEP/JSTEP01 /STOP  2017278.1003 
+         CPU:     0 HR  00 MIN  00.00 SEC    SRB:     0 HR  00 MIN  00.00 SEC    
+         VIRT:   584K  SYS:   264K  EXT:        0K  SYS:    11492K
+         ATB- REAL:                    12K  SLOTS:                     0K
+              VIRT- ALLOC:       2M SHRD:       0M
+ IEF375I  JOB/KC02322A/START 2017278.1003
+ IEF033I  JOB/KC02322A/STOP  2017278.1003 
+         CPU:     0 HR  00 MIN  00.00 SEC    SRB:     0 HR  00 MIN  00.00 SEC    
+ !! END OF JES SPOOL FILE !!
+1*** ASSIST 4.0/A2-05/15/82  470/V7A/0:OS/VS2  INS=SDFP7/X=BGHO, CHECK/TRC/=1180, OPTS=CDKMPR FROM PENN ST*NIU COMPSCI*LT            
+0                                                                                                                                    
+0                                                                                                               PAGE    1            
+0  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                                                          
+ 000000                                1 MAIN     CSECT                                                                              
+ 000000                                2          USING MAIN,15       ESTABLISH ADDRESSABILITY ON R15                                
+                                       3 *                                                                                           
+ 000000 1BAA                           4          SR    10,10         ZERO OUT EMPLOYEE COUNTER                                      
+ 000002 1BBB                           5          SR    11,11         ZERO OUT TOTAL BONUS AMOUNT                                    
+ 000004 1BCC                           6          SR    12,12         ZERO OUT TOTAL GROSS PAY AMOUNT                                
+                                       7 *                                                                                           
+                                       8 *        XPRNT COLHDR1,133   PRINT COLUMN HEADER                                            
+                                       9 *        XPRNT HYPHENS1,133  PRINT HYPHENS UNDER COLUMN HEADERS                             
+                                      10 *                                                                                           
+ 000006 E000 F098 0050 00098          11          XREAD BUFFER,80     READ FIRST RECORD                                              
+                                      12 *                                                                                           
+ 00000C 4770 F068            00068    13 LOOP1    BNZ   ENDLOOP1                                                                     
+                                      14 *                                                                                           
+ 000010 41A0 A001            00001    15          LA    10,1(,10)     ADD 1 TO EMPLOYEE COUNTER                                      
+ 000014 1B22                          16          SR    2,2           ZERO OUT R2                                                    
+                                      17 *                                                                                           
+ 000016 5330 F098            00098    18          XDECI 3,BUFFER      GET EMPLOYEE ID NUMBER                                         
+ 00001A 5340 1000            00000    19          XDECI 4,0(,1)       GET HOURLY PAY RATE                                            
+ 00001E 5350 1000            00000    20          XDECI 5,0(,1)       GET HOURS WORKED                                               
+ 000022 5360 1000            00000    21          XDECI 6,0(,1)       GET DEDUCTION AMOUNT                                           
+ 000026 5370 1000            00000    22          XDECI 7,0(,1)       GET BONUS AMOUNT                                               
+                                      23 *                                                                                           
+ 00002A 4180 F098            00098    24          LA    8,BUFFER         GET ADDRESS OF BUFFER                                       
+ 00002E D218 F280 8018 00280 00018    25          MVC   ONAME(25),24(8)  MOVE EMPLOYEE NAME TO DETAIL LINE                           
+                                      26 *                                                                                           
+ 000034 5230 F29C            0029C    27          XDECO 3,OIDNUM      MOVE ID NUMBER TO DETAIL LINE                                  
+ 000038 5240 F2AB            002AB    28          XDECO 4,OPAYRATE    MOVE HOURLY PAY RATE TO DETAIL LINE                            
+ 00003C 5250 F2BA            002BA    29          XDECO 5,OHOURS      MOVE HOURS WORKED TO DETAIL LINE                               
+ 000040 5260 F2C9            002C9    30          XDECO 6,ODEDUCT     MOVE DEDUCTION AMOUNT TO DETAIL LINE                           
+ 000044 5270 F2D8            002D8    31          XDECO 7,OBONUS      MOVE BONUS AMOUNT TO DETAIL LINE                               
+                                      32 *                                                                                           
+                                      33 *  COMPUTE GROSS PAY AMOUNT                                                                 
+                                      34 *                                                                                           
+ 000048 1894                          35          LR    9,4           COPY HOURLY PAY RATE INTO EVEN-ODD PAIR                        
+ 00004A 1C85                          36          MR    8,5           MULTIPLY EVEN-ODD PAIR BY HOURS WORKED                         
+                                      37 *                                                                                           
+ 00004C 1B96                          38          SR    9,6           SUBTRACT DEDUCTION AMOUNT                                      
+ 00004E 1A97                          39          AR    9,7           ADD BONUS AMOUNT                                               
+                                      40 *                                                                                           
+ 000050 5290 F2E7            002E7    41          XDECO 9,OGROSS      MOVE GROSS PAY AMOUNT TO DETAIL LINE                           
+                                      42 *                                                                                           
+ 000054 E020 F277 0085 00277          43          XPRNT DETAIL1,133   PRINT THE PRINT LINE                                           
+                                      44 *                                                                                           
+                                      45 *  ADD TO RUNNING TOTALS                                                                    
+                                      46 *                                                                                           
+ 00005A 1AB7                          47          AR    11,7          ADD BONUS AMOUNT TO TOTAL BONUS AMOUNT                         
+ 00005C 1AC9                          48          AR    12,9          ADD GROSS PAY AMOUNT TO TOTAL GROSS PAY                        
+                                      49 *                                                   AMOUNT                                  
+ 00005E E000 F098 0050 00098          50          XREAD BUFFER,80     READ NEXT RECORD                                               
+                                      51 *                                                                                           
+ 000064 47F0 F00C            0000C    52          B     LOOP1                                                                        
+1                                                                                                               PAGE    2            
+0  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                                                          
+                                      53 *                                                                                           
+                                      54 *  COMPUTE AVERAGE GROSS PAY AMOUNT AND DISPLAY IT AND TOTALS                               
+                                      55 *                                                                                           
+ 000068 52A0 F31A            0031A    56 ENDLOOP1 XDECO 10,OCOUNT     MOVE EMPLOYEE COUNT TO TOTALS1 LINE                            
+ 00006C E020 F2FC 0085 002FC          57          XPRNT TOTALS1,133   PRINT TOTALS1 LINE WITH EMPLOYEE COUNT                         
+                                      58 *                                                                                           
+ 000072 52B0 F39F            0039F    59          XDECO 11,OTBONUS    MOVE TOTAL BONUS AMOUNT TO TOTALS2 LINE                        
+ 000076 E020 F381 0085 00381          60          XPRNT TOTALS2,133   PRINT TOTALS2 LINE WITH TOTAL BONUS AMT                        
+                                      61 *                                                                                           
+ 00007C 52C0 F424            00424    62          XDECO 12,OTGROSS    MOVE TOTAL GROSS PAY AMOUNT TO TOTALS3                         
+ 000080 E020 F406 0085 00406          63          XPRNT TOTALS3,133   PRINT TOTALS3 LINE WITH TOTAL GROSS PAY                        
+                                      64 *                                                                                           
+                                      65 *        XPRNT HYPHENS2,133  PRINT HYPHENS LINE 2                                           
+                                      66 *                                                                                           
+ 000086 1B88                          67          SR    8,8           CLEAR EVEN REGISTER OF EVEN-ODD PAIR                           
+ 000088 189C                          68          LR    9,12          COPY TOTAL GROSS PAY INTO ODD OF PAIR                          
+ 00008A 1D8A                          69          DR    8,10          DIVIDE TOTAL GROSS PAY BY COUNTER                              
+                                      70 *                                                                                           
+ 00008C 5290 F4A9            004A9    71          XDECO 9,OAVGPAY     MOVE AVERAGE GROSS PAY AMOUNT TO LINE                          
+                                      72 *                                                                                           
+ 000090 E020 F48B 0085 0048B          73          XPRNT TOTALS4,133    PRINT THE TOTALS2 LINE                                        
+                                      74 *                                                                                           
+ 000096 07FE                          75          BR    14            RETURN TO CALLER                                               
+                                      76 *                                                                                           
+                                      77          LTORG                                                                              
+                                      78 *                                                                                           
+ 000098 5B5B5B5B5B5B5B5B              79 BUFFER   DC    80C'$'                                                                       
+                                      80 *                                                                                           
+ 0000E8 F1                            81 COLHDR1  DC    C'1'                                                                         
+ 0000E9 4040404040404040              82          DC    8C' '                                                                        
+ 0000F1 C5D4D7D3D6E8C5C5              83          DC    C'EMPLOYEE NAME            '                                                 
+ 00010A 404040                        84          DC    C'   '                                                                       
+ 00010D 40C5D4D7D3D6E8C5              85          DC    C' EMPLOYEE ID'                                                              
+ 000119 404040                        86          DC    C'   '                                                                       
+ 00011C 4040C8D6E4D9D3E8              87          DC    C'  HOURLY PAY'                                                              
+ 000128 404040                        88          DC    C'   '                                                                       
+ 00012B C8D6E4D9E240E6D6              89          DC    C'HOURS WORKED'                                                              
+ 000137 404040                        90          DC    C'   '                                                                       
+ 00013A 4040C4C5C4E4C3E3              91          DC    C'  DEDUCTIONS'                                                              
+ 000146 404040                        92          DC    C'   '                                                                       
+ 000149 C2D6D5E4E240C1D4              93          DC    C'BONUS AMOUNT'                                                              
+ 000155 404040                        94          DC    C'   '                                                                       
+ 000158 404040C7D9D6E2E2              95          DC    C'   GROSS PAY'                                                              
+ 000164 4040404040404040              96          DC    9C' '                                                                        
+                                      97 *                                                                                           
+ 00016D 40                            98 HYPHENS1 DC    C' '                                                                         
+ 00016E 4040404040404040              99          DC    8C' '                                                                        
+ 000176 6060606060606060             100          DC    C'-------------------------'                                                 
+ 00018F 404040                       101          DC    C'   '                                                                       
+ 000192 6060606060606060             102          DC    C'------------'                                                              
+ 00019E 404040                       103          DC    C'   '                                                                       
+ 0001A1 6060606060606060             104          DC    C'------------'                                                              
+ 0001AD 404040                       105          DC    C'   '                                                                       
+ 0001B0 6060606060606060             106          DC    C'------------'                                                              
+ 0001BC 404040                       107          DC    C'   '                                                                       
+ 0001BF 6060606060606060             108          DC    C'------------'                                                              
+ 0001CB 404040                       109          DC    C'   '                                                                       
+1                                                                                                               PAGE    3            
+0  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                                                          
+ 0001CE 6060606060606060             110          DC    C'------------'                                                              
+ 0001DA 404040                       111          DC    C'   '                                                                       
+ 0001DD 6060606060606060             112          DC    C'------------'                                                              
+ 0001E9 4040404040404040             113          DC    9C' '                                                                        
+                                     114 *                                                                                           
+ 0001F2 F0                           115 HYPHENS2 DC    C'0'                                                                         
+ 0001F3 4040404040404040             116          DC    96C' '                                                                       
+ 000253 6060606060606060             117          DC    C'------------'                                                              
+ 00025F 404040                       118          DC    C'   '                                                                       
+ 000262 6060606060606060             119          DC    C'------------'                                                              
+ 00026E 4040404040404040             120          DC    9C' '                                                                        
+                                     121 *                                                                                           
+ 000277 F0                           122 DETAIL1  DC    C'0'                                                                         
+ 000278 4040404040404040             123          DC    8C' '                                                                        
+ 000280                              124 ONAME    DS    CL25            OUTPUT EMPLOYEE NAME                                         
+ 000299 404040                       125          DC    C'   '                                                                       
+ 00029C                              126 OIDNUM   DS    CL12            OUTPUT EMPLOYEE ID NUMBER                                    
+ 0002A8 404040                       127          DC    C'   '                                                                       
+ 0002AB                              128 OPAYRATE DS    CL12            OUTPUT HOURLY PAY RATE                                       
+ 0002B7 404040                       129          DC    C'   '                                                                       
+ 0002BA                              130 OHOURS   DS    CL12            OUTPUT HOURS WORKED                                          
+ 0002C6 404040                       131          DC    C'   '                                                                       
+ 0002C9                              132 ODEDUCT  DS    CL12            OUTPUT DEDUCTION AMOUNT                                      
+ 0002D5 404040                       133          DC    C'   '                                                                       
+ 0002D8                              134 OBONUS   DS    CL12            OUTPUT BONUS AMOUNT                                          
+ 0002E4 404040                       135          DC    C'   '                                                                       
+ 0002E7                              136 OGROSS   DS    CL12            OUTPUT GROSS PAY AMOUNT                                      
+ 0002F3 4040404040404040             137          DC    9C' '                                                                        
+                                     138 *                                                                                           
+ 0002FC F0                           139 TOTALS1  DC    C'0'                                                                         
+ 0002FD 4040404040404040             140          DC    8C' '                                                                        
+ 000305 E3D6E3C1D340C5D4             141          DC    C'TOTAL EMPLOYEE COUNT:'                                                     
+ 00031A                              142 OCOUNT   DS    CL12            OUTPUT COUNT OF EMPLOYEES                                    
+ 000326 4040404040404040             143          DC    91C' '                                                                       
+                                     144 *                                                                                           
+ 000381 F0                           145 TOTALS2  DC    C'0'                                                                         
+ 000382 4040404040404040             146          DC    8C' '                                                                        
+ 00038A 40404040404040E3             147          DC    C'       TOTAL BONUSES:'                                                     
+ 00039F                              148 OTBONUS  DS    CL12            OUTPUT TOTAL BONUS AMOUNT                                    
+ 0003AB 4040404040404040             149          DC    91C' '                                                                       
+                                     150 *                                                                                           
+ 000406 F0                           151 TOTALS3  DC    C'0'                                                                         
+ 000407 4040404040404040             152          DC    8C' '                                                                        
+ 00040F 4040404040E3D6E3             153          DC    C'     TOTAL GROSS PAY:'                                                     
+ 000424                              154 OTGROSS  DS    CL12            OUTPUT TOTAL GROSS PAY AMOUNT                                
+ 000430 4040404040404040             155          DC    91C' '                                                                       
+                                     156 *                                                                                           
+ 00048B F0                           157 TOTALS4  DC    C'0'                                                                         
+ 00048C 4040404040404040             158          DC    8C' '                                                                        
+ 000494 404040C1E5C5D9C1             159          DC    C'   AVERAGE GROSS PAY:'                                                     
+ 0004A9                              160 OAVGPAY  DS    CL12            OUTPUT TOTAL GROSS PAY AMOUNT                                
+ 0004B5 4040404040404040             161          DC    91C' '                                                                       
+                                     162 *                                                                                           
+                                     163          END   MAIN                                                                         
+0***  NO   STATEMENTS FLAGGED -  NO   WARNINGS,  NO   ERRORS                                                                         
+0*** DYNAMIC CORE AREA USED:  LOW:    8032 HIGH:     784 LEAVING:  484752 FREE BYTES. AVERAGE:       53 BYTES/STMT ***               
+0*** ASSEMBLY TIME =    0.000 SECS,   164000 STATEMENTS/SEC ***                                                                      
+1*** PROGRAM EXECUTION BEGINNING - ANY OUTPUT BEFORE EXECUTION TIME MESSAGE IS PRODUCED BY USER PROGRAM ***                          
+0        JOAN TOWER                         12345             15             80             25            500           1675         
+0        WOLFGANG AMADEUS MOZART            23456             19             80              0             10           1530         
+0        RICHARD STRAUSS                    22132             10             80             31            200            969         
+0        AMY BEACH                          65465             22             80             15            900           2645         
+0        DAME ETHEL SMYTHE                  44560             23             28             34             70            680         
+0        PETER ILYICH TCHAIKOVSKY           99870             22             80             21              0           1739         
+0        ANTON BRUCKNER                     14966             20             78              0            210           1770         
+0        TOTAL EMPLOYEE COUNT:           7                                                                                           
+0               TOTAL BONUSES:        1890                                                                                           
+0             TOTAL GROSS PAY:       11008                                                                                           
+0           AVERAGE GROSS PAY:        1572                                                                                           
+0*** EXECUTION TIME =    0.000 SECS.       192 INSTRUCTIONS EXECUTED -   192000 INSTRUCTIONS/SEC ***                                 
+0*** AM004 - NORMAL USER TERMINATION BY RETURN ***                                                                                   
+ !! END OF JES SPOOL FILE !!
