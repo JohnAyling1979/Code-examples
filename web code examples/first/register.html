@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Register</title>
+	</head>
+	<body>
+		<header>
+			<h1>Register</h1>
+		</header>
+		<nav>
+			<a href="http://google.com">Google</a>
+		</nav><br>
+		<!-- Use GET, not POST -->
+		<div> 
+			<form method="GET">
+				<span>First Name:</span> <input type="text" name="first"><br>
+				Last Name: <input type="text" name="last"><br>
+				Email: <input type="email" name="email" required><br>
+				Password: <input type="password" min="5" name="password"><br>
+				Birthday: <input type="date" name="date"><br>
+				Gender:<br>
+				<input type="radio" name="gender" value="male">Male<br>
+				<input type="radio" name="gender" value="female"	>Female<br>
+				<input type="radio" name="gender" value="other">	Other<br>
+				Pets:<br>
+				<input type="checkbox" name="cats">Cats<br>
+				<input type="checkbox" name="dogs">Dogs<br>
+				Cars:<br>
+				<select name="car">
+					<option value="Volvo">Volvo</option>
+					<option value="Audi">Audi</option>
+					<option value="Prizm">Prizm</option>
+				</select><br>
+				<input type="submit" value="Register">
+				<input type="reset">
+			</form>
+		</div>
+		<footer>
+			<p>Website made with love</p>
+		</footer>
+	</body>
+</html>

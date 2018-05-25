@@ -1,0 +1,86 @@
+*
+{
+	text-align: right;
+}
+
+body
+{
+	background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXUjGBHulJpWwYCX-FO2fU0rEurOFgfsJC_KgzKEYL0Drm2pXw);
+	background-size: cover;
+}
+
+h2
+{
+	color: red;
+}
+
+p
+{
+	color: #AA4139;
+	text-align: center;
+	border: 5px solid rgba(255, 176, 170, .5);
+	cursor: crosshair;
+}
+
+p
+{
+	color: green;
+	line-height: 30px;
+	font-style: italic;
+	font-weight: bold;
+	font-size: 20px;
+	font-family: 'Mr Dafoe', cursive;
+}
+
+img
+{
+	float: left;
+	text-t
+}
+
+footer
+{
+	clear: both;
+	text-align: center;
+}
+
+li
+{
+	list-style: none;
+	display: inline-block;
+}
+
+.webtext
+{
+	border: 5px dashed green;
+}
+
+.active
+{
+	color: red;
+}
+
+#div1
+{
+	background: rgba(0,0,255,.2);
+}
+
+#div2
+{
+	background: rgba(255,0,0,.2);
+}
+
+.boxmodel
+{
+	border: 5px solid red;
+	display: inline-block;
+	padding: 5px 20px;
+	margin: 0px 20px;
+	width: 33px;
+	height: 55px;
+}
+
+span
+{
+	font-size: 5em;
+}
