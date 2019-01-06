@@ -1,2 +1,2 @@
 # Code-examples
-Examples of source code done at NIU
+Source code from NIU
